@@ -179,6 +179,7 @@
   function renderEvents() {
     const list = $("eventList");
     const items = allEvents();
+    if ($("eventCount")) $("eventCount").textContent = items.length + " 个记录";
     if (!items.length) {
       list.innerHTML = ["第一件事", "一次旅行", "一个普通的晚上", "想记住的吵架和好", "过节", "第 1000 天"]
         .map((t) => `<div class="ghost-card">空位 · ${t}</div>`).join("");
