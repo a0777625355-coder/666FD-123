@@ -9,7 +9,8 @@
     { id: "tee", name: "灰上衣" },
     { id: "knit", name: "粉毛衣" },
     { id: "maid", name: "女仆装" },
-    { id: "cap", name: "画家帽" }
+    { id: "cap", name: "画家帽" },
+    { id: "seaside", name: "海边裙装" }
   ];
   const ACTIONS = [
     { id: "idle", name: "呼吸" },
@@ -122,7 +123,8 @@
       buddy("ying", "assets/chars/outfits/maid-walk.gif"),
       buddy("ying", "assets/chars/outfits/cap-walk.gif"),
       buddy("dong", "assets/chars/dong-idle.gif"),
-      buddy("ying", "assets/chars/outfits/tee-walk.gif")
+      buddy("ying", "assets/chars/outfits/tee-walk.gif"),
+      buddy("ying", "assets/chars/outfits/seaside-walk.gif")
     ].join("");
     $("paradeTrack").innerHTML = bits + bits;
   }
