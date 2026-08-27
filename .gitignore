@@ -1,0 +1,16 @@
+# 本地编辑器和系统文件
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+
+# 私人照片、历史素材和附件（不上传到公开仓库）
+/相册/
+/像素相册/
+/附件/
+/photos/
+/设计素材/
+
+# 本地备份
+*.json
+!package.json

@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#070b1a" />
+  <title>我们的第 1000 天</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Press+Start+2P&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="grid-bg" aria-hidden="true"></div>
+  <div class="sparkles" aria-hidden="true"></div>
+
+  <div id="gate" class="overlay hidden" role="dialog">
+    <div class="pair intro-pair">
+      <div class="buddy ying"><img class="pixel" src="assets/chars/ying-wave.gif" alt="" /></div>
+      <div class="buddy dong"><img class="pixel" src="assets/chars/dong-wave.gif" alt="" /></div>
+    </div>
+    <p class="pix-label">LOCKED</p>
+    <h2>输入口令</h2>
+    <input id="gateInput" type="password" autocomplete="off" />
+    <button type="button" id="gateBtn" class="btn">进入</button>
+    <p id="gateErr" class="err hidden">口令不对。</p>
+  </div>
+
+  <div id="intro" class="overlay">
+    <div class="pair intro-pair">
+      <div class="buddy ying"><img class="pixel" src="assets/chars/outfits/hoodie-wave.gif" alt="" /></div>
+      <div class="buddy dong"><img class="pixel" src="assets/chars/dong-wave.gif" alt="" /></div>
+    </div>
+    <img class="pixel intro-heart" src="assets/chars/couple-heart.gif" alt="" />
+    <p class="pix-label">SAVE FILE</p>
+    <h1>我们的第 1000 天</h1>
+    <p class="muted" id="introNames"></p>
+    <button type="button" id="startBtn" class="btn btn-pink">开始</button>
+  </div>
+
+  <main id="app" class="app is-locked">
+    <header class="topbar">
+      <span class="pix-label">1000 DAYS</span>
+      <nav class="nav">
+        <a href="#hero">首页</a>
+        <a href="#wardrobe">换装</a>
+        <a href="#moves">动作</a>
+        <a href="#timeline">日子</a>
+        <a href="#album">相册</a>
+        <a href="#letter">信</a>
+      </nav>
+      <span id="topNames"></span>
+    </header>
+
+    <section class="hero" id="hero">
+      <div class="hero-deco" aria-hidden="true">
+        <img class="pixel deco" src="assets/chars/ying-heart.gif" alt="" />
+        <img class="pixel deco" src="assets/chars/dong-laugh.gif" alt="" />
+        <img class="pixel deco" src="assets/chars/ying-blink.gif" alt="" />
+      </div>
+      <div class="stage">
+        <div class="buddy dong"><img id="heroDong" class="pixel" src="assets/chars/dong-wave.gif" alt="小栋" /></div>
+        <div class="buddy ying"><img id="heroYing" class="pixel" src="assets/chars/outfits/hoodie-wave.gif" alt="小颖" /></div>
+      </div>
+      <div class="ground"></div>
+      <p class="pix-label" id="heroKicker">TOGETHER</p>
+      <p class="hero-num" id="heroNum">1000</p>
+      <p class="hero-sub" id="heroSub"></p>
+      <p class="hero-since" id="heroSince"></p>
+      <div class="clock" id="clock">
+        <div><b id="cDays">0</b><span>天</span></div>
+        <div><b id="cHours">00</b><span>时</span></div>
+        <div><b id="cMins">00</b><span>分</span></div>
+        <div><b id="cSecs">00</b><span>秒</span></div>
+      </div>
+      <p class="hero-note" id="heroNote"></p>
+      <div class="stat-grid">
+        <article><b id="statDays">0</b><span>在一起的天</span></article>
+        <article><b id="statHours">0</b><span>个小时</span></article>
+        <article><b id="statSunsets">0</b><span>次日落</span></article>
+        <article><b>∞</b><span>还想要的明天</span></article>
+      </div>
+    </section>
+
+    <div class="parade" aria-hidden="true">
+      <div class="parade-track" id="paradeTrack"></div>
+    </div>
+
+    <section class="panel" id="wardrobe">
+      <p class="pix-label">WARDROBE</p>
+      <h2>小颖的衣服</h2>
+      <p class="lead">点一套衣服。右边可以切呼吸、挥手、走路、跳跃。小栋会一直站在旁边。</p>
+      <div class="outfit-grid" id="outfitGrid"></div>
+      <div class="action-row" id="actionRow"></div>
+      <div class="runway">
+        <div class="buddy dong"><img id="runwayDong" class="pixel" src="assets/chars/dong-idle.gif" alt="小栋" /></div>
+        <div class="buddy ying"><img id="runwayYing" class="pixel" src="assets/chars/outfits/hoodie-idle.gif" alt="小颖换装" /></div>
+      </div>
+    </section>
+
+    <section class="panel" id="moves">
+      <p class="pix-label">MOVES</p>
+      <h2>动作馆</h2>
+      <p class="lead">两个人的动作都放在这里，个头已经按同一高度对齐。</p>
+      <div class="move-grid">
+        <figure>
+          <div class="buddy ying"><img class="pixel" src="assets/chars/outfits/hoodie-idle.gif" alt="" /></div>
+          <figcaption>小颖 · 呼吸</figcaption>
+        </figure>
+        <figure>
+          <div class="buddy dong"><img class="pixel" src="assets/chars/dong-idle.gif" alt="" /></div>
+          <figcaption>小栋 · 呼吸</figcaption>
+        </figure>
+        <figure>
+          <div class="buddy ying"><img class="pixel" src="assets/chars/outfits/hoodie-wave.gif" alt="" /></div>
+          <figcaption>小颖 · 挥手</figcaption>
+        </figure>
+        <figure>
+          <div class="buddy dong"><img class="pixel" src="assets/chars/dong-wave.gif" alt="" /></div>
+          <figcaption>小栋 · 挥手</figcaption>
+        </figure>
+        <figure>
+          <div class="buddy ying"><img class="pixel" src="assets/chars/ying-walk.gif" alt="" /></div>
+          <figcaption>小颖 · 走路</figcaption>
+        </figure>
+        <figure>
+          <div class="buddy dong"><img class="pixel" src="assets/chars/dong-walk.gif" alt="" /></div>
+          <figcaption>小栋 · 走路</figcaption>
+        </figure>
+        <figure>
+          <div class="buddy ying"><img class="pixel" src="assets/chars/outfits/hoodie-jump.gif" alt="" /></div>
+          <figcaption>小颖 · 跳跃</figcaption>
+        </figure>
+        <figure>
+          <div class="buddy dong"><img class="pixel" src="assets/chars/dong-laugh.gif" alt="" /></div>
+          <figcaption>小栋 · 眨眼大笑</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="panel" id="faces">
+      <p class="pix-label">FACES</p>
+      <h2>表情</h2>
+      <div class="face-row">
+        <figure><img class="pixel face" src="assets/chars/ying-blink.gif" alt="" /><figcaption>小颖眨眼</figcaption></figure>
+        <figure><img class="pixel face" src="assets/chars/ying-heart.gif" alt="" /><figcaption>小颖心动</figcaption></figure>
+        <figure><img class="pixel face" src="assets/chars/dong-laugh.gif" alt="" /><figcaption>小栋大笑</figcaption></figure>
+        <figure><img class="pixel face couple-face" src="assets/chars/couple-heart.gif" alt="" /><figcaption>两人爱心</figcaption></figure>
+      </div>
+    </section>
+
+    <section class="panel" id="timeline">
+      <p class="pix-label">EVENTS</p>
+      <h2>日子与事件</h2>
+      <p class="lead">这里先空着。你自己加日期、标题和发生过的事。</p>
+      <div class="event-list" id="eventList"></div>
+      <button type="button" class="btn" data-open="event">＋ 添加事件</button>
+    </section>
+
+    <section class="panel" id="album">
+      <p class="pix-label">PHOTOS</p>
+      <h2>相册</h2>
+      <p class="lead">不替你排照片。把要留下的图自己加进来。</p>
+      <div class="album-grid" id="albumGrid"></div>
+      <div class="dropzone" id="dropzone">
+        把照片拖到这里，或
+        <button type="button" class="btn btn-tiny" data-open="photo">选择图片</button>
+      </div>
+    </section>
+
+    <section class="panel" id="letter">
+      <p class="pix-label">LETTER</p>
+      <h2>一封信</h2>
+      <div class="letter-wrap">
+        <div class="buddy ying peek"><img class="pixel" src="assets/chars/ying-blink.gif" alt="" /></div>
+        <article class="paper"><p id="letterBody"></p></article>
+        <div class="buddy dong peek"><img class="pixel" src="assets/chars/dong-idle.gif" alt="" /></div>
+      </div>
+    </section>
+
+    <footer class="ending">
+      <div class="pair">
+        <div class="buddy ying"><img class="pixel" src="assets/chars/outfits/hoodie-wave.gif" alt="" /></div>
+        <div class="buddy dong"><img class="pixel" src="assets/chars/dong-wave.gif" alt="" /></div>
+      </div>
+      <img class="pixel ending-heart" src="assets/chars/couple-heart.gif" alt="" />
+      <p class="pix-label">CONTINUE</p>
+      <p>下一个 1000 天，也慢慢写。</p>
+    </footer>
+  </main>
+
+  <div class="dock" id="dock">
+    <button type="button" class="btn btn-pink" data-open="event">添加事件</button>
+    <button type="button" class="btn" data-open="photo">添加照片</button>
+    <button type="button" class="btn btn-ghost" id="exportBtn">导出备份</button>
+    <label class="btn btn-ghost">导入<input type="file" id="importFile" accept="application/json" hidden /></label>
+  </div>
+
+  <div id="modal" class="modal hidden" role="dialog">
+    <div class="modal-card">
+      <button type="button" class="modal-x" id="modalClose" aria-label="关闭">×</button>
+      <form id="eventForm" class="hidden">
+        <h3>添加事件</h3>
+        <label>日期<input name="date" type="date" required /></label>
+        <label>标题<input name="title" type="text" maxlength="40" placeholder="发生了什么" required /></label>
+        <label>这件事<textarea name="text" rows="4" placeholder="可以以后再写细。"></textarea></label>
+        <label>配图（可选）<input name="photo" type="file" accept="image/*" /></label>
+        <button type="submit" class="btn btn-pink">保存</button>
+      </form>
+      <form id="photoForm" class="hidden">
+        <h3>添加照片</h3>
+        <label>图片<input name="photo" type="file" accept="image/*" required /></label>
+        <label>日期（可选）<input name="date" type="date" /></label>
+        <label>一句说明<input name="caption" type="text" maxlength="40" placeholder="这张想写什么" /></label>
+        <button type="submit" class="btn btn-pink">保存</button>
+      </form>
+    </div>
+  </div>
+
+  <button type="button" id="musicBtn" class="music-btn hidden" aria-label="音乐">♪</button>
+  <audio id="bgm" loop preload="none"></audio>
+
+  <script src="js/config.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
