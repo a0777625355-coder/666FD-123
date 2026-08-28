@@ -184,13 +184,34 @@
     $$("[data-view]").forEach((btn) => {
       btn.addEventListener("click", () => switchView(btn.dataset.view));
     });
+    // 手机端侧边栏抽屉
+    $("menuBtn").onclick = () => {
+      document.querySelector(".rail").classList.contains("open") ? closeRail() : openRail();
+    };
+    $("railBackdrop").onclick = closeRail;
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closeRail();
+    });
     switchView("home");
+  }
+
+  function openRail() {
+    document.querySelector(".rail").classList.add("open");
+    $("railBackdrop").classList.add("on");
+    document.body.classList.add("rail-open");
+  }
+
+  function closeRail() {
+    document.querySelector(".rail").classList.remove("open");
+    $("railBackdrop").classList.remove("on");
+    document.body.classList.remove("rail-open");
   }
 
   function switchView(name) {
     $$(".tab").forEach((b) => b.classList.toggle("is-on", b.dataset.view === name));
     $$(".view").forEach((v) => v.classList.toggle("is-on", v.id === "view-" + name));
     $("app").dataset.active = name;
+    closeRail(); // 手机端切页后收起抽屉
     if (name === "chat") safe(() => renderChat()); // 每次进聊天都刷新身份
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
@@ -500,6 +521,7 @@
       data.food = { v: seedVer, menu: merge("menu"), milktea: merge("milktea") };
       store.save(data);
     }
+    if (cloudReady) pushSiteData();
     $$(".f-sub", $("foodTabs")).forEach((b) => {
       b.onclick = () => {
         curFood = b.dataset.food;
@@ -553,6 +575,7 @@
       list[idx].rate = Number(e.target.closest("[data-rate]").dataset.rate);
       store.save(data);
       renderFood();
+      if (cloudReady) pushSiteData();
       return;
     }
     if (e.target.closest("[data-del-food]")) {
@@ -560,6 +583,7 @@
       list.splice(idx, 1);
       store.save(data);
       renderFood();
+      if (cloudReady) pushSiteData();
       return;
     }
     if (e.target.closest("[data-edit-food]")) {
@@ -568,6 +592,7 @@
       list[idx].name = name.trim() || list[idx].name;
       store.save(data);
       renderFood();
+      if (cloudReady) pushSiteData();
     }
   }
 
@@ -580,6 +605,7 @@
     foodList().push({ name: trimmed, rate: 3 });
     store.save(data);
     renderFood();
+    if (cloudReady) pushSiteData();
   }
 
   /* ============ 玩乐 ============ */
@@ -650,6 +676,7 @@
         store.save(data);
         toast(data.address ? "地址已保存" : "地址已清空");
         renderFunDetail();
+        if (cloudReady) pushSiteData();
       };
       $("funMap").onclick = () => {
         const val = $("funAddr").value.trim() || data.address || "";
@@ -762,7 +789,11 @@
   /* ============ 云端实时同步（Supabase，可选） ============ */
   function setupCloudChat() {
     const cloud = cfg.cloud || {};
-    if (!cloud.enabled || !cloud.url || !cloud.anonKey || !window.supabase) return;
+    if (!cloud.enabled || !cloud.url || !cloud.anonKey) return;
+    if (!window.supabase) {
+      toast("实时同步 SDK 加载失败，检查 assets/vendor/supabase.min.js");
+      return; // 保持本地模式
+    }
     try {
       supabase = window.supabase.createClient(cloud.url, cloud.anonKey);
     } catch (e) {
@@ -771,18 +802,79 @@
     }
     cloudReady = true;
     loadCloudChat();
+    loadCloudSiteData();
     chatChannel = supabase
       .channel("chat-sync")
       .on("postgres_changes", { event: "*", schema: "public", table: "chat" }, () => loadCloudChat())
       .subscribe();
     // 兜底：每 20 秒自动拉一次 + 标签页切回前台立即拉取
     setInterval(() => {
-      if (cloudReady) loadCloudChat();
+      if (!cloudReady) return;
+      loadCloudChat();
+      loadCloudSiteData();
     }, 20000);
     document.addEventListener("visibilitychange", () => {
-      if (!document.hidden && cloudReady) loadCloudChat();
+      if (!document.hidden && cloudReady) {
+        loadCloudChat();
+        loadCloudSiteData();
+      }
     });
     renderChat();
+  }
+
+  /* ============ 云端同步：菜单 / 奶茶 / 逛街地址（site_data 表） ============ */
+  async function loadCloudSiteData() {
+    if (!cloudReady) return;
+    try {
+      const { data: rows, error } = await supabase
+        .from("site_data")
+        .select("*")
+        .eq("id", "main")
+        .limit(1);
+      if (error || !rows || !rows.length || !rows[0].payload) return;
+      if (mergeCloudSite(rows[0].payload)) {
+        store.save(data);
+        renderFood();
+        renderFunDetail();
+        pushSiteData(); // 合并结果写回云端
+      }
+    } catch (e) {
+      /* 网络波动忽略 */
+    }
+  }
+
+  /* 云端为准（名字相同取云端数据），本地独有的记录保留不丢 */
+  function mergeCloudSite(payload) {
+    let changed = false;
+    const cf = payload.food;
+    if (cf && typeof cf === "object" && Array.isArray(cf.menu) && Array.isArray(cf.milktea)) {
+      const cur = data.food && typeof data.food === "object" ? data.food : { menu: [], milktea: [] };
+      const mergeList = (cloudList, localList) => {
+        const cloudNames = new Set((cloudList || []).map((x) => x && x.name));
+        const localOnly = (localList || []).filter((x) => x && x.name && !cloudNames.has(x.name));
+        return cloudList.map((x) => ({ name: x.name, rate: Number(x.rate) || 3 })).concat(localOnly);
+      };
+      data.food = {
+        v: String(cf.v || (cur.v || "0")),
+        menu: mergeList(cf.menu, cur.menu),
+        milktea: mergeList(cf.milktea, cur.milktea)
+      };
+      changed = true;
+    }
+    if (typeof payload.address === "string" && payload.address && String(data.address || "") !== payload.address) {
+      data.address = payload.address;
+      changed = true;
+    }
+    return changed;
+  }
+
+  function pushSiteData() {
+    if (!cloudReady || !supabase) return;
+    supabase.from("site_data").upsert([
+      { id: "main", payload: { food: data.food || null, address: data.address || "", updatedAt: Date.now() }, time: Date.now() }
+    ]).then(({ error }) => {
+      if (error) console.error("[site_data 推送失败]", error.message);
+    });
   }
 
   async function loadCloudChat() {

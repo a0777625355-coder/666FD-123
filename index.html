@@ -34,7 +34,9 @@
 
   <!-- ==================== 主站 ==================== -->
   <div id="app" class="app is-locked" data-active="home">
-    <!-- 左侧栏 -->
+    <!-- 手机端抽屉遮罩 -->
+    <div class="rail-backdrop" id="railBackdrop"></div>
+    <!-- 左侧栏（手机端为抽拉抽屉） -->
     <aside class="rail">
       <div class="brand">
         <span class="brand-title"><b id="railName">LEE</b><i>♥</i><b id="railName2">CHENG</b></span>
@@ -68,6 +70,7 @@
     <!-- 右侧主区 -->
     <div class="sheet">
       <header class="topbar">
+        <button type="button" class="menu-btn" id="menuBtn" aria-label="打开侧栏">☰</button>
         <nav class="tabs" id="tabs" aria-label="页面">
           <button type="button" class="tab is-on" data-view="home">时光</button>
           <button type="button" class="tab" data-view="food">吃喝</button>
@@ -348,8 +351,8 @@
 
   <audio id="bgm" loop preload="none"></audio>
 
-  <!-- Supabase 实时同步 SDK（云端聊天用；未配置时不影响本地使用） -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Supabase 实时同步 SDK（本地文件，避免国内网络加载 CDN 失败） -->
+  <script src="assets/vendor/supabase.min.js"></script>
 
   <script src="js/config.js"></script>
   <script src="js/store.js"></script>
