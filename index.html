@@ -7,225 +7,349 @@
   <title>我们的第 1000 天</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Press+Start+2P&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=Press+Start+2P&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
-  <div class="grid-bg" aria-hidden="true"></div>
-  <div class="sparkles" aria-hidden="true"></div>
+  <div class="bg-blobs" aria-hidden="true"></div>
+  <div class="floaters" id="floaters" aria-hidden="true"></div>
 
-  <div id="gate" class="overlay hidden" role="dialog">
-    <div class="pair intro-pair">
-      <div class="buddy ying"><img class="pixel" src="assets/chars/ying-wave.gif" alt="" /></div>
-      <div class="buddy dong"><img class="pixel" src="assets/chars/dong-wave.gif" alt="" /></div>
+  <!-- ==================== 门禁页（玻璃材质 + 自定义背景图） ==================== -->
+  <div id="gate" class="gate">
+    <div class="gate-bg" id="gateBg" aria-hidden="true"></div>
+    <div class="gate-veil" aria-hidden="true"></div>
+    <div class="gate-card">
+      <h1 class="gate-title" id="gateTitle">LEE &amp; CHENG</h1>
+      <p class="gate-info">距离 <b id="gateDate">2023-12-31</b>，已经过去 <b class="gate-days" id="gateDays">0</b> 天</p>
+      <div class="gate-input-row">
+        <label for="gateInput">请输入密码：</label>
+        <input id="gateInput" type="text" inputmode="numeric" autocomplete="off" placeholder="____" maxlength="8" />
+        <button type="button" id="gateBtn" class="gate-enter">进入</button>
+      </div>
+      <p class="gate-hint" id="gateHint">（密码就是天数）</p>
+      <p class="gate-err hidden" id="gateErr">口令不对，再看看上面的天数。</p>
     </div>
-    <p class="pix-label">LOCKED</p>
-    <h2>输入口令</h2>
-    <input id="gateInput" type="password" autocomplete="off" />
-    <button type="button" id="gateBtn" class="btn">进入</button>
-    <p id="gateErr" class="err hidden">口令不对。</p>
+    <p class="gate-note">LEE &amp; CHENG · OUR 1000 DAYS</p>
   </div>
 
-  <div id="intro" class="overlay">
-    <div class="pair intro-pair">
-      <div class="buddy ying"><img class="pixel" src="assets/chars/outfits/hoodie-wave.gif" alt="" /></div>
-      <div class="buddy dong"><img class="pixel" src="assets/chars/dong-wave.gif" alt="" /></div>
+  <!-- ==================== 主站 ==================== -->
+  <div id="app" class="app is-locked" data-active="home">
+    <!-- 左侧栏 -->
+    <aside class="rail">
+      <div class="brand">
+        <span class="brand-title"><b id="railName">LEE</b><i>♥</i><b id="railName2">CHENG</b></span>
+        <span class="brand-sub">我们的第 1000 天</span>
+      </div>
+      <button type="button" class="rail-chat" data-view="chat">💬 聊天</button>
+      <div class="rail-select" id="railOutfits">
+        <button type="button" class="rail-label" data-toggle="outfits" title="展开 / 收起">
+          <span>换装 <i>OUTFIT</i></span><b class="arrow">▾</b>
+        </button>
+        <div class="rail-opts" id="railOutfitList"></div>
+      </div>
+      <div class="rail-select" id="railActions">
+        <button type="button" class="rail-label" data-toggle="actions" title="展开 / 收起">
+          <span>动作 <i>ACTION</i></span><b class="arrow">▾</b>
+        </button>
+        <div class="rail-opts" id="railActionList"></div>
+        <button type="button" class="rail-link" data-view="moves">动作馆 ➜</button>
+      </div>
+      <div class="rail-buddies" aria-hidden="true">
+        <img class="pixel" src="assets/chars/ying-wave.gif" alt="" />
+        <img class="pixel" src="assets/chars/dong-wave.gif" alt="" />
+      </div>
+      <div class="rail-foot">
+        <button type="button" id="musicBtn" class="rail-btn hidden" aria-label="音乐">♪ 音乐</button>
+        <button type="button" id="exportBtn" class="rail-btn">备份</button>
+        <label class="rail-btn">导入<input type="file" id="importFile" accept="application/json" hidden /></label>
+      </div>
+    </aside>
+
+    <!-- 右侧主区 -->
+    <div class="sheet">
+      <header class="topbar">
+        <nav class="tabs" id="tabs" aria-label="页面">
+          <button type="button" class="tab is-on" data-view="home">时光</button>
+          <button type="button" class="tab" data-view="food">吃喝</button>
+          <button type="button" class="tab" data-view="fun">玩乐</button>
+          <button type="button" class="tab" data-view="game">Game</button>
+          <button type="button" class="tab" data-view="album">相册</button>
+          <button type="button" class="tab" data-view="letter">信</button>
+        </nav>
+        <div class="top-actions">
+          <button type="button" class="mini-btn" data-open="event">＋事件</button>
+          <button type="button" class="mini-btn" data-open="photo">＋照片</button>
+          <button type="button" id="musicBtn2" class="mini-btn hidden">♪</button>
+        </div>
+      </header>
+
+      <main class="content">
+        <!-- ========== 时光（首页） ========== -->
+        <section class="view is-on" id="view-home">
+          <div class="hero">
+            <p class="kicker" id="heroKicker">OUR 1000 DAYS</p>
+            <div class="stage">
+              <div class="buddy dong"><img id="heroDong" class="pixel" src="assets/chars/dong-wave.gif" alt="小栋" /></div>
+              <div class="buddy ying"><img id="heroYing" class="pixel" src="assets/chars/outfits/hoodie-wave.gif" alt="小颖" /></div>
+            </div>
+            <div class="ground"></div>
+            <p class="hero-num" id="heroNum">0</p>
+            <p class="hero-sub" id="heroSub"></p>
+            <p class="hero-since" id="heroSince"></p>
+            <div class="clock" id="clock">
+              <div class="tile"><b id="cDays">0</b><span>天</span></div>
+              <div class="tile"><b id="cHours">00</b><span>时</span></div>
+              <div class="tile"><b id="cMins">00</b><span>分</span></div>
+              <div class="tile"><b id="cSecs">00</b><span>秒</span></div>
+            </div>
+            <p class="hero-note" id="heroNote"></p>
+            <div class="stat-grid">
+              <article><b id="statDays">0</b><span>在一起的天</span></article>
+              <article><b id="statHours">0</b><span>个小时</span></article>
+              <article><b id="statSunsets">0</b><span>次日落</span></article>
+              <article><b>∞</b><span>还想要的明天</span></article>
+            </div>
+            <div class="year-ribbon" aria-label="共同时间地图">
+              <span><b>2023</b><small>初见 · 靠近</small></span>
+              <span><b>2024</b><small>一起出发</small></span>
+              <span><b>2025</b><small>远方与现场</small></span>
+              <span><b>2026</b><small>故事仍在继续</small></span>
+            </div>
+          </div>
+
+          <div class="parade" aria-hidden="true">
+            <div class="parade-track" id="paradeTrack"></div>
+          </div>
+
+          <section class="block" id="timeline">
+            <div class="block-head row-end">
+              <div>
+                <h2>日子与事件</h2>
+                <p>从第一次看见，到一起去过的远方。新的故事，也可以继续加进来。</p>
+              </div>
+              <span class="count-chip" id="eventCount">0 个记录</span>
+            </div>
+            <div class="tl-list" id="eventList"></div>
+            <button type="button" class="btn btn-accent" data-open="event">＋ 添加事件</button>
+          </section>
+        </section>
+
+        <!-- ========== 动作馆（侧边栏进入的下一级页面） ========== -->
+        <section class="view" id="view-moves">
+          <div class="page-head row-end">
+            <div>
+              <h2>动作馆</h2>
+              <p>两个人的动作汇总。换装 / 切动作请用左侧栏。</p>
+            </div>
+            <button type="button" class="btn btn-ghost btn-sm" data-view="home">← 返回时光</button>
+          </div>
+          <div class="runway" id="movesRunway">
+            <div class="buddy dong"><img id="runwayDong" class="pixel" src="assets/chars/dong-idle.gif" alt="小栋" /></div>
+            <div class="buddy ying"><img id="runwayYing" class="pixel" src="assets/chars/outfits/hoodie-idle.gif" alt="小颖" /></div>
+          </div>
+          <section class="block">
+            <div class="block-head">
+              <h2>动作汇总</h2>
+              <p>小颖的动作会跟着左侧栏选的服装与动作变化。</p>
+            </div>
+            <div class="move-grid">
+              <figure>
+                <div class="buddy ying"><img class="pixel" src="assets/chars/outfits/hoodie-idle.gif" alt="" /></div>
+                <figcaption>小颖 · 呼吸</figcaption>
+              </figure>
+              <figure>
+                <div class="buddy dong"><img class="pixel" src="assets/chars/dong-idle.gif" alt="" /></div>
+                <figcaption>小栋 · 呼吸</figcaption>
+              </figure>
+              <figure>
+                <div class="buddy ying"><img class="pixel" src="assets/chars/outfits/hoodie-wave.gif" alt="" /></div>
+                <figcaption>小颖 · 挥手</figcaption>
+              </figure>
+              <figure>
+                <div class="buddy dong"><img class="pixel" src="assets/chars/dong-wave.gif" alt="" /></div>
+                <figcaption>小栋 · 挥手</figcaption>
+              </figure>
+              <figure>
+                <div class="buddy ying"><img class="pixel" src="assets/chars/ying-walk.gif" alt="" /></div>
+                <figcaption>小颖 · 走路</figcaption>
+              </figure>
+              <figure>
+                <div class="buddy dong"><img class="pixel" src="assets/chars/dong-walk.gif" alt="" /></div>
+                <figcaption>小栋 · 走路</figcaption>
+              </figure>
+              <figure>
+                <div class="buddy ying"><img class="pixel" src="assets/chars/outfits/hoodie-jump.gif" alt="" /></div>
+                <figcaption>小颖 · 跳跃</figcaption>
+              </figure>
+              <figure>
+                <div class="buddy dong"><img class="pixel" src="assets/chars/dong-laugh.gif" alt="" /></div>
+                <figcaption>小栋 · 眨眼大笑</figcaption>
+              </figure>
+            </div>
+            <div class="face-row">
+              <figure><img class="pixel face" src="assets/chars/ying-blink.gif" alt="" /><figcaption>小颖眨眼</figcaption></figure>
+              <figure><img class="pixel face" src="assets/chars/ying-heart.gif" alt="" /><figcaption>小颖心动</figcaption></figure>
+              <figure><img class="pixel face" src="assets/chars/dong-laugh.gif" alt="" /><figcaption>小栋大笑</figcaption></figure>
+              <figure><img class="pixel face couple-face" src="assets/chars/couple-heart.gif" alt="" /><figcaption>两人爱心</figcaption></figure>
+            </div>
+          </section>
+        </section>
+
+        <!-- ========== 聊天 ========== -->
+        <section class="view" id="view-chat">
+          <div class="page-head row-end">
+            <div>
+              <h2>聊天</h2>
+              <p>给对方留句话，回来就能看到。</p>
+            </div>
+            <button type="button" class="btn btn-ghost btn-sm" data-view="home">← 返回时光</button>
+          </div>
+          <div class="chat-box">
+            <div class="chat-head">
+              <span class="chat-who" id="chatWho"></span>
+              <div class="chat-actions">
+                <button type="button" class="btn btn-ghost btn-sm" id="chatSync" title="两个浏览器连到同一个文件夹即可互相同步消息">连接文件夹</button>
+                <button type="button" class="btn btn-ghost btn-sm" id="chatClear">清空</button>
+              </div>
+            </div>
+            <div class="chat-log" id="chatLog"></div>
+            <form class="chat-form" id="chatForm" autocomplete="off">
+              <input id="chatInput" type="text" maxlength="200" placeholder="说点什么…" />
+              <button type="submit" class="btn btn-accent">发送</button>
+            </form>
+          </div>
+        </section>
+
+        <!-- ========== 吃喝 ========== -->
+        <section class="view" id="view-food">
+          <div class="page-head">
+            <h2>吃喝</h2>
+            <p>把喜欢的菜和奶茶记下来，打个喜爱的分。</p>
+          </div>
+          <div class="sub-tabs" id="foodTabs">
+            <button type="button" class="f-sub is-on" data-food="menu">菜单</button>
+            <button type="button" class="f-sub" data-food="milktea">奶茶</button>
+          </div>
+          <p class="cat-note" id="foodNote"></p>
+          <div class="board">
+            <div class="board-head">
+              <h3 id="foodTitle">菜单</h3>
+              <button type="button" class="btn btn-accent btn-sm" id="foodAdd">＋ 添加</button>
+            </div>
+            <div class="food-rows" id="foodRows"></div>
+            <p class="board-tip">点名字改名 · 点爱心打喜爱度 · 悬停可删除</p>
+          </div>
+        </section>
+
+        <!-- ========== 玩乐 ========== -->
+        <section class="view" id="view-fun">
+          <div class="page-head">
+            <h2>玩乐</h2>
+            <p>点左边一项直接打开；「看电视」会进入选择页面。</p>
+          </div>
+          <div class="fun-layout">
+            <div class="fun-list" id="funList"></div>
+            <div class="fun-panel" id="funPanel">
+              <div class="fun-detail" id="funDetail"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========== Game ========== -->
+        <section class="view" id="view-game">
+          <div class="page-head">
+            <h2>Game</h2>
+            <p>先选游戏，再点一名角色，一起出发。</p>
+          </div>
+          <div class="game-cards" id="gameCards"></div>
+          <div class="role-panel hidden" id="rolePanel">
+            <h3>请选择角色：</h3>
+            <div class="role-row" id="roleRow"></div>
+            <div class="game-start" id="gameStart"></div>
+          </div>
+        </section>
+
+        <!-- ========== 相册 ========== -->
+        <section class="view" id="view-album">
+          <div class="page-head row-end">
+            <div>
+              <h2>相册</h2>
+              <p>把要留下的图自己加进来。</p>
+            </div>
+            <button type="button" class="btn btn-accent" data-open="photo">＋ 添加照片</button>
+          </div>
+          <div class="album-grid" id="albumGrid"></div>
+          <div class="dropzone" id="dropzone">
+            把照片拖到这里，或
+            <button type="button" class="btn btn-accent btn-sm" data-open="photo">选择图片</button>
+          </div>
+        </section>
+
+        <!-- ========== 信 ========== -->
+        <section class="view" id="view-letter">
+          <div class="page-head">
+            <h2>一封信</h2>
+            <p>写给 TA 的话。</p>
+          </div>
+          <div class="letter-wrap">
+            <div class="buddy ying peek"><img class="pixel" src="assets/chars/ying-blink.gif" alt="" /></div>
+            <article class="paper"><p id="letterBody"></p></article>
+            <div class="buddy dong peek"><img class="pixel" src="assets/chars/dong-idle.gif" alt="" /></div>
+          </div>
+        </section>
+
+        <footer class="ending">
+          <div class="pair">
+            <div class="buddy ying"><img class="pixel" src="assets/chars/outfits/hoodie-wave.gif" alt="" /></div>
+            <div class="buddy dong"><img class="pixel" src="assets/chars/dong-wave.gif" alt="" /></div>
+          </div>
+          <p>下一个 1000 天，也慢慢写。</p>
+        </footer>
+      </main>
     </div>
-    <img class="pixel intro-heart" src="assets/chars/couple-heart.gif" alt="" />
-    <p class="pix-label">SAVE FILE</p>
-    <h1>我们的第 1000 天</h1>
-    <p class="muted" id="introNames"></p>
-    <button type="button" id="startBtn" class="btn btn-pink">开始</button>
   </div>
 
-  <main id="app" class="app is-locked">
-    <header class="topbar">
-      <span class="pix-label">1000 DAYS</span>
-      <nav class="nav">
-        <a href="#hero">首页</a>
-        <a href="#wardrobe">换装</a>
-        <a href="#moves">动作</a>
-        <a href="#timeline">日子</a>
-        <a href="#album">相册</a>
-        <a href="#letter">信</a>
-      </nav>
-      <span id="topNames"></span>
-    </header>
-
-    <section class="hero" id="hero">
-      <div class="hero-deco" aria-hidden="true">
-        <img class="pixel deco" src="assets/chars/ying-heart.gif" alt="" />
-        <img class="pixel deco" src="assets/chars/dong-laugh.gif" alt="" />
-        <img class="pixel deco" src="assets/chars/ying-blink.gif" alt="" />
-      </div>
-      <div class="stage">
-        <div class="buddy dong"><img id="heroDong" class="pixel" src="assets/chars/dong-wave.gif" alt="小栋" /></div>
-        <div class="buddy ying"><img id="heroYing" class="pixel" src="assets/chars/outfits/hoodie-wave.gif" alt="小颖" /></div>
-      </div>
-      <div class="ground"></div>
-      <p class="pix-label" id="heroKicker">TOGETHER</p>
-      <p class="hero-num" id="heroNum">1000</p>
-      <p class="hero-sub" id="heroSub"></p>
-      <p class="hero-since" id="heroSince"></p>
-      <div class="clock" id="clock">
-        <div><b id="cDays">0</b><span>天</span></div>
-        <div><b id="cHours">00</b><span>时</span></div>
-        <div><b id="cMins">00</b><span>分</span></div>
-        <div><b id="cSecs">00</b><span>秒</span></div>
-      </div>
-      <p class="hero-note" id="heroNote"></p>
-      <div class="hero-ribbon" aria-label="共同时间地图">
-        <span><b>2023</b><small>初见 · 靠近</small></span>
-        <span><b>2024</b><small>一起出发</small></span>
-        <span><b>2025</b><small>远方与现场</small></span>
-        <span><b>2026</b><small>故事仍在继续</small></span>
-      </div>
-      <div class="stat-grid">
-        <article><b id="statDays">0</b><span>在一起的天</span></article>
-        <article><b id="statHours">0</b><span>个小时</span></article>
-        <article><b id="statSunsets">0</b><span>次日落</span></article>
-        <article><b>∞</b><span>还想要的明天</span></article>
-      </div>
-    </section>
-
-    <div class="parade" aria-hidden="true">
-      <div class="parade-track" id="paradeTrack"></div>
-    </div>
-
-    <section class="panel" id="wardrobe">
-      <p class="pix-label">WARDROBE</p>
-      <h2>小颖的衣服</h2>
-      <p class="lead">点一套衣服。右边可以切呼吸、挥手、走路、跳跃。小栋会一直站在旁边。</p>
-      <div class="outfit-grid" id="outfitGrid"></div>
-      <div class="action-row" id="actionRow"></div>
-      <div class="runway">
-        <div class="buddy dong"><img id="runwayDong" class="pixel" src="assets/chars/dong-idle.gif" alt="小栋" /></div>
-        <div class="buddy ying"><img id="runwayYing" class="pixel" src="assets/chars/outfits/hoodie-idle.gif" alt="小颖换装" /></div>
-      </div>
-    </section>
-
-    <section class="panel" id="moves">
-      <p class="pix-label">MOVES</p>
-      <h2>动作馆</h2>
-      <p class="lead">两个人的动作都放在这里，个头已经按同一高度对齐。</p>
-      <div class="move-grid">
-        <figure>
-          <div class="buddy ying"><img class="pixel" src="assets/chars/outfits/hoodie-idle.gif" alt="" /></div>
-          <figcaption>小颖 · 呼吸</figcaption>
-        </figure>
-        <figure>
-          <div class="buddy dong"><img class="pixel" src="assets/chars/dong-idle.gif" alt="" /></div>
-          <figcaption>小栋 · 呼吸</figcaption>
-        </figure>
-        <figure>
-          <div class="buddy ying"><img class="pixel" src="assets/chars/outfits/hoodie-wave.gif" alt="" /></div>
-          <figcaption>小颖 · 挥手</figcaption>
-        </figure>
-        <figure>
-          <div class="buddy dong"><img class="pixel" src="assets/chars/dong-wave.gif" alt="" /></div>
-          <figcaption>小栋 · 挥手</figcaption>
-        </figure>
-        <figure>
-          <div class="buddy ying"><img class="pixel" src="assets/chars/ying-walk.gif" alt="" /></div>
-          <figcaption>小颖 · 走路</figcaption>
-        </figure>
-        <figure>
-          <div class="buddy dong"><img class="pixel" src="assets/chars/dong-walk.gif" alt="" /></div>
-          <figcaption>小栋 · 走路</figcaption>
-        </figure>
-        <figure>
-          <div class="buddy ying"><img class="pixel" src="assets/chars/outfits/hoodie-jump.gif" alt="" /></div>
-          <figcaption>小颖 · 跳跃</figcaption>
-        </figure>
-        <figure>
-          <div class="buddy dong"><img class="pixel" src="assets/chars/dong-laugh.gif" alt="" /></div>
-          <figcaption>小栋 · 眨眼大笑</figcaption>
-        </figure>
-      </div>
-    </section>
-
-    <section class="panel" id="faces">
-      <p class="pix-label">FACES</p>
-      <h2>表情</h2>
-      <div class="face-row">
-        <figure><img class="pixel face" src="assets/chars/ying-blink.gif" alt="" /><figcaption>小颖眨眼</figcaption></figure>
-        <figure><img class="pixel face" src="assets/chars/ying-heart.gif" alt="" /><figcaption>小颖心动</figcaption></figure>
-        <figure><img class="pixel face" src="assets/chars/dong-laugh.gif" alt="" /><figcaption>小栋大笑</figcaption></figure>
-        <figure><img class="pixel face couple-face" src="assets/chars/couple-heart.gif" alt="" /><figcaption>两人爱心</figcaption></figure>
-      </div>
-    </section>
-
-    <section class="panel" id="timeline">
-      <p class="pix-label">EVENTS</p>
-      <h2>日子与事件</h2>
-      <p class="lead">从第一次看见，到一起去过的远方。新的故事，也可以继续加进来。</p>
-      <div class="section-note"><span>STORY LOG</span><b id="eventCount">0 个记录</b><small>每一段都值得被记住</small></div>
-      <div class="event-list" id="eventList"></div>
-      <button type="button" class="btn" data-open="event">＋ 添加事件</button>
-    </section>
-
-    <section class="panel" id="album">
-      <p class="pix-label">PHOTOS</p>
-      <h2>相册</h2>
-      <p class="lead">不替你排照片。把要留下的图自己加进来。</p>
-      <div class="album-grid" id="albumGrid"></div>
-      <div class="dropzone" id="dropzone">
-        把照片拖到这里，或
-        <button type="button" class="btn btn-tiny" data-open="photo">选择图片</button>
-      </div>
-    </section>
-
-    <section class="panel" id="letter">
-      <p class="pix-label">LETTER</p>
-      <h2>一封信</h2>
-      <div class="letter-wrap">
-        <div class="buddy ying peek"><img class="pixel" src="assets/chars/ying-blink.gif" alt="" /></div>
-        <article class="paper"><p id="letterBody"></p></article>
-        <div class="buddy dong peek"><img class="pixel" src="assets/chars/dong-idle.gif" alt="" /></div>
-      </div>
-    </section>
-
-    <footer class="ending">
-      <div class="pair">
-        <div class="buddy ying"><img class="pixel" src="assets/chars/outfits/hoodie-wave.gif" alt="" /></div>
-        <div class="buddy dong"><img class="pixel" src="assets/chars/dong-wave.gif" alt="" /></div>
-      </div>
-      <img class="pixel ending-heart" src="assets/chars/couple-heart.gif" alt="" />
-      <p class="pix-label">CONTINUE</p>
-      <p>下一个 1000 天，也慢慢写。</p>
-    </footer>
-  </main>
-
-  <div class="dock" id="dock">
-    <button type="button" class="btn btn-pink" data-open="event">添加事件</button>
-    <button type="button" class="btn" data-open="photo">添加照片</button>
-    <button type="button" class="btn btn-ghost" id="exportBtn">导出备份</button>
-    <label class="btn btn-ghost">导入<input type="file" id="importFile" accept="application/json" hidden /></label>
-  </div>
-
+  <!-- ==================== 弹窗 ==================== -->
   <div id="modal" class="modal hidden" role="dialog">
     <div class="modal-card">
       <button type="button" class="modal-x" id="modalClose" aria-label="关闭">×</button>
+
       <form id="eventForm" class="hidden">
         <h3>添加事件</h3>
         <label>日期<input name="date" type="date" required /></label>
         <label>标题<input name="title" type="text" maxlength="40" placeholder="发生了什么" required /></label>
         <label>这件事<textarea name="text" rows="4" placeholder="可以以后再写细。"></textarea></label>
         <label>配图（可选）<input name="photo" type="file" accept="image/*" /></label>
-        <button type="submit" class="btn btn-pink">保存</button>
+        <button type="submit" class="btn btn-accent">保存</button>
       </form>
+
       <form id="photoForm" class="hidden">
         <h3>添加照片</h3>
         <label>图片<input name="photo" type="file" accept="image/*" required /></label>
         <label>日期（可选）<input name="date" type="date" /></label>
         <label>一句说明<input name="caption" type="text" maxlength="40" placeholder="这张想写什么" /></label>
-        <button type="submit" class="btn btn-pink">保存</button>
+        <button type="submit" class="btn btn-accent">保存</button>
       </form>
     </div>
   </div>
 
-  <button type="button" id="musicBtn" class="music-btn hidden" aria-label="音乐">♪</button>
+  <!-- 大图查看 -->
+  <div id="lightbox" class="lightbox hidden" role="dialog">
+    <button type="button" class="lb-x" id="lbClose" aria-label="关闭">×</button>
+    <button type="button" class="lb-arrow" id="lbPrev" aria-label="上一张">‹</button>
+    <figure>
+      <img id="lbImg" src="" alt="" />
+      <figcaption id="lbCaption"></figcaption>
+    </figure>
+    <button type="button" class="lb-arrow" id="lbNext" aria-label="下一张">›</button>
+  </div>
+
+  <div class="toast" id="toast" role="status"></div>
+
   <audio id="bgm" loop preload="none"></audio>
+
+  <!-- Supabase 实时同步 SDK（云端聊天用；未配置时不影响本地使用） -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <script src="js/config.js"></script>
   <script src="js/store.js"></script>

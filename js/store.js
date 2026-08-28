@@ -1,22 +1,46 @@
 (function () {
-  const KEY = "our1000days.v1";
+  const KEY = "our1000days.v2";
+  const OLD_KEY = "our1000days.v1";
+
+  function defaults() {
+    return { events: [], photos: [], food: null, address: "", chat: [] };
+  }
+
+  function normalize(raw) {
+    const d = defaults();
+    if (!raw || typeof raw !== "object") return d;
+    return {
+      events: Array.isArray(raw.events) ? raw.events : [],
+      photos: Array.isArray(raw.photos) ? raw.photos : [],
+      food: raw.food && typeof raw.food === "object" ? raw.food : null,
+      address: typeof raw.address === "string" ? raw.address : "",
+      chat: Array.isArray(raw.chat) ? raw.chat : []
+    };
+  }
 
   function load() {
     try {
       const raw = localStorage.getItem(KEY);
-      if (!raw) return { events: [], photos: [] };
-      const data = JSON.parse(raw);
-      return {
-        events: Array.isArray(data.events) ? data.events : [],
-        photos: Array.isArray(data.photos) ? data.photos : []
-      };
+      if (raw) return normalize(JSON.parse(raw));
+      // 旧版数据迁移（events / photos 不丢）
+      const old = localStorage.getItem(OLD_KEY);
+      if (old) {
+        const migrated = normalize(JSON.parse(old));
+        save(migrated);
+        return migrated;
+      }
+      return defaults();
     } catch (e) {
-      return { events: [], photos: [] };
+      return defaults();
     }
   }
 
   function save(data) {
-    localStorage.setItem(KEY, JSON.stringify(data));
+    try {
+      localStorage.setItem(KEY, JSON.stringify(data));
+    } catch (e) {
+      /* 存储满时忽略 */
+    }
   }
 
   function uid() {
@@ -62,11 +86,7 @@
         const reader = new FileReader();
         reader.onload = () => {
           try {
-            const data = JSON.parse(reader.result);
-            const next = {
-              events: Array.isArray(data.events) ? data.events : [],
-              photos: Array.isArray(data.photos) ? data.photos : []
-            };
+            const next = normalize(JSON.parse(reader.result));
             save(next);
             resolve(next);
           } catch (e) {
