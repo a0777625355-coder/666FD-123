@@ -43,6 +43,7 @@
   let lbList = [];
   let lbIndex = -1;
   let revealObs = null;
+  const GATE_SESSION_KEY = "our1000days.gate.v1";
   const railOpen = { outfits: false, actions: false }; // 侧边栏折叠状态（默认折叠）
   // 吃喝统一粉色系；颜色浓度随喜爱程度变化（1心最淡 → 5心最饱和）
   const FOOD_A = "#f18fc5";
@@ -461,6 +462,23 @@
 
   /* ============ 门禁 ============ */
   function setupGate() {
+    const unlockGate = (identity, remember) => {
+      me = identity === "him" ? "him" : "her";
+      if (remember) {
+        try { localStorage.setItem(GATE_SESSION_KEY, me); } catch (e) { /* 保持无存储模式可用 */ }
+      }
+      document.documentElement.classList.add("gate-passed");
+      $("gateErr").classList.add("hidden");
+      $("gate").classList.add("bye");
+      $("app").classList.remove("is-locked");
+      safe(() => renderChat());
+    };
+
+    try {
+      const remembered = localStorage.getItem(GATE_SESSION_KEY);
+      if (remembered === "her" || remembered === "him") unlockGate(remembered, false);
+    } catch (e) { /* 存储不可用时保留正常登录流程 */ }
+
     $("gateBtn").onclick = tryGate;
     $("gateInput").addEventListener("keydown", (e) => {
       if (e.key === "Enter") tryGate();
@@ -472,11 +490,7 @@
       const himCode = String(LOGIN.him || "000");
       const ok = val === herCode || val === himCode || (cfg.password && val === cfg.password);
       if (ok) {
-        me = val === himCode ? "him" : "her";
-        $("gateErr").classList.add("hidden");
-        $("gate").classList.add("bye");
-        $("app").classList.remove("is-locked");
-        safe(() => renderChat()); // 刷新聊天页的身份显示
+        unlockGate(val === himCode ? "him" : "her", true);
       } else {
         $("gateErr").classList.remove("hidden");
         $("gateInput").select();

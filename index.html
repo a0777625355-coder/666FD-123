@@ -4,11 +4,25 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#f8f5f2" />
+  <meta name="color-scheme" content="light" />
   <title>我们的第 1000 天</title>
+  <style>
+    /* 登录成功后在首屏解析阶段直接隐藏门禁，避免刷新时先闪出登录页。 */
+    html.gate-passed #gate { display: none !important; }
+    html.gate-passed #app.is-locked { filter: none !important; pointer-events: auto !important; user-select: auto !important; }
+  </style>
+  <script>
+    try {
+      var rememberedGate = localStorage.getItem("our1000days.gate.v1");
+      if (rememberedGate === "her" || rememberedGate === "him") {
+        document.documentElement.classList.add("gate-passed");
+      }
+    } catch (e) { /* 隐私模式下存储不可用时仍可正常手动登录 */ }
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=Press+Start+2P&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/style.css?v=20260830-motionfx" />
+  <link rel="stylesheet" href="css/style.css?v=20260830-mobilefix1" />
 </head>
 <body>
   <div class="bg-blobs" aria-hidden="true"></div>
@@ -452,6 +466,6 @@
 
   <script src="js/config.js?v=20260830-yangyuhuan"></script>
   <script src="js/store.js"></script>
-  <script src="js/main.js?v=20260830-lightfun2"></script>
+  <script src="js/main.js?v=20260830-mobilefix1"></script>
 </body>
 </html>
