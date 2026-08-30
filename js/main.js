@@ -11,7 +11,10 @@
     { id: "knit", name: "粉毛衣" },
     { id: "maid", name: "女仆装" },
     { id: "cap", name: "画家帽" },
-    { id: "seaside", name: "海边裙装" }
+    { id: "seaside", name: "海边裙装" },
+    { id: "flower", name: "蓝花环白长裙" },
+    { id: "blackcoat", name: "黑色长外套" },
+    { id: "winter", name: "白色羽绒服" }
   ];
   const ACTIONS = [
     { id: "idle", name: "呼吸" },
@@ -26,6 +29,9 @@
   let curFood = "menu";
   let curGame = null;
   let curRole = null;
+  let curHeroSkin = 0;
+  let curVariantHero = "xiaoqiao";
+  let curVariantSkin = "original";
   let curFun = null;
   let me = "her"; // 当前登录身份：her=小颖 / him=小栋
   let chatHandle = null; // 聊天文件的文件夹句柄（文件同步用）
@@ -52,6 +58,81 @@
   const start = parseDate(cfg.startDate);
   const FUN = Array.isArray(cfg.fun) ? cfg.fun : [];
   const GAMES = Array.isArray(cfg.games) ? cfg.games : [];
+  const HERO_SKINS = {
+    "小乔": [
+      { name: "原皮", file: "assets/games/heroes/xiaoqiao-original.gif", color: "#ff8fc9" },
+      { name: "定香结", file: "assets/games/heroes/xiaoqiao-dingxiang.gif", color: "#f3a56f" },
+      { name: "时之魔女", file: "assets/games/heroes/xiaoqiao-witch.gif", color: "#b68cff" },
+      { name: "线条小狗", file: "assets/games/heroes/xiaoqiao-puppy.gif", color: "#9bcff8" },
+      { name: "HelloKitty联动", file: "assets/games/heroes/xiaoqiao-kitty.gif", color: "#ff78b8" }
+    ],
+    "大乔": [
+      { name: "原皮", file: "assets/games/heroes/daqiao-original.gif", color: "#6ad9ed" },
+      { name: "花嫁", file: "assets/games/heroes/daqiao-bride.gif", color: "#f3a6cd" },
+      { name: "时之奇旅", file: "assets/games/heroes/daqiao-journey.gif", color: "#8ca2ff" },
+      { name: "白鹤梁神女", file: "assets/games/heroes/daqiao-goddess.gif", color: "#72d6d2" }
+    ],
+    "杨玉环": [
+      { name: "原皮", file: "assets/games/heroes/yangyuhuan-original.gif", color: "#8bd8b0" },
+      { name: "星之鸣奏", file: "assets/games/heroes/yangyuhuan-melody.gif", color: "#9f91f5" },
+      { name: "银翎春语", file: "assets/games/heroes/yangyuhuan-silver.gif", color: "#9ddbea" },
+      { name: "寅虎·心曲", file: "assets/games/heroes/yangyuhuan-tiger.gif", color: "#efb36e" }
+    ]
+  };
+  const VARIANT_MOODS = [
+    { id: "happy", name: "开心", mark: "♥" },
+    { id: "angry", name: "生气", mark: "✦" },
+    { id: "helpless", name: "无奈", mark: "…" },
+    { id: "sad", name: "难过", mark: "◆" },
+    { id: "gloomy", name: "郁闷", mark: "☁" },
+    { id: "excited", name: "兴奋", mark: "★" },
+    { id: "invincible", name: "无敌", mark: "⚡" }
+  ];
+  const VARIANT_HEROES = {
+    xiaoqiao: {
+      name: "小乔", tone: "#f28bc3",
+      skins: [
+        { id: "original", name: "原皮" },
+        { id: "dingxiang", name: "定香结" },
+        { id: "witch", name: "时之魔女" },
+        { id: "puppy", name: "线条小狗" },
+        { id: "kitty", name: "HelloKitty联动" }
+      ]
+    },
+    daqiao: {
+      name: "大乔", tone: "#67d4e5",
+      skins: [
+        { id: "original", name: "原皮" },
+        { id: "bride", name: "花嫁" },
+        { id: "journey", name: "时之奇旅" },
+        { id: "goddess", name: "白鹤梁神女" }
+      ]
+    },
+    yangyuhuan: {
+      name: "杨玉环", tone: "#8bd8b0",
+      skins: [
+        { id: "original", name: "原皮" },
+        { id: "melody", name: "星之鸣奏" },
+        { id: "silver", name: "银翎春语" },
+        { id: "tiger", name: "寅虎·心曲" }
+      ]
+    }
+  };
+  const VIEW_LABELS = {
+    home: "时光", moves: "动作馆", chat: "聊天", food: "吃喝",
+    fun: "玩乐", game: "Game", variants: "百变小颖", album: "相册", letter: "信"
+  };
+  const FUN_VISUALS = {
+    movie:  { icon: "🎬", tag: "MOVIE NIGHT", line: "挑一部想看的，把今晚留给故事。", tone: "#e66fa8", image: "assets/chars/outfits/hoodie-idle.gif" },
+    douyin: { icon: "♫", tag: "SHORT BREAK", line: "靠在一起，分享刚刚刷到的快乐。", tone: "#8e7ad9", image: "assets/chars/outfits/tee-wave.gif" },
+    kpl:    { icon: "⚔", tag: "MATCH TIME", line: "为喜欢的队伍加油，也为彼此欢呼。", tone: "#48b9c8", image: "assets/variants/xiaoqiao/original-excited.png" },
+    taobao: { icon: "🛍", tag: "WISH LIST", line: "把喜欢的小东西放进同一张愿望清单。", tone: "#d5a34b", image: "assets/chars/outfits/plaid-walk.gif" },
+    short:  { icon: "▣", tag: "MINI SERIES", line: "短短一集，也可以成为一起笑的理由。", tone: "#68c9a8", image: "assets/chars/outfits/knit-idle.gif" },
+    tv:     { icon: "▻", tag: "COUCH TIME", line: "选一个平台，开启两个人的客厅影院。", tone: "#ed8c72", image: "assets/chars/outfits/winter-idle.gif" },
+    music:  { icon: "♪", tag: "OUR PLAYLIST", line: "听一首歌，把今天的心情收藏起来。", tone: "#6f9edb", image: "assets/variants/yangyuhuan/melody-happy.png" },
+    street: { icon: "⌖", tag: "CITY WALK", line: "写下目的地，然后牵手出门。", tone: "#df7eb3", image: "assets/chars/outfits/blackcoat-walk.gif" },
+    date:   { icon: "♥", tag: "DATE CALL", line: "认真约一次会，普通日子也会发光。", tone: "#e76f89", image: "assets/chars/couple-heart.gif", pair: true }
+  };
   const LOGIN = (cfg.login && typeof cfg.login === "object" ? cfg.login : null) || { her: "days", him: "000" };
   const FOOD_SEEDS =
     (cfg.foodDefaults && typeof cfg.foodDefaults === "object" ? cfg.foodDefaults : null) ||
@@ -74,18 +155,13 @@
     $("heroSub").textContent = cfg.subtitle || "";
     $("heroSince").textContent = "从 " + (cfg.startDate || "") + " 开始";
 
-    // 背景大图（玻璃背景的自定义图片）
-    if (cfg.bgImage) {
-      const bg = $("gateBg");
-      bg.style.backgroundImage = `url('${encodeURI(cfg.bgImage).replace(/%2F/g, "/")}')`;
-      bg.classList.add("on");
-    }
-
     safe(() => setupGate());
+    safe(() => setupGateCarousel());
     safe(() => setupTabs());
     safe(() => setupClock());
     safe(() => renderParade());
     safe(() => renderRailSelect());
+    safe(() => setupPlanner());
     safe(() => renderEvents());
     safe(() => renderAlbum());
     safe(() => renderLetter());
@@ -93,6 +169,7 @@
     safe(() => setupFood());
     safe(() => setupFun());
     safe(() => setupGame());
+    safe(() => setupVariants());
     safe(() => setupChat());
     safe(() => setupMusic());
     safe(() => setupLightbox());
@@ -127,6 +204,41 @@
     wrap.innerHTML = html;
   }
 
+  /* 首页 · 今天做什么（使用现有菜单与玩乐配置组合，不改动数据） */
+  function setupPlanner() {
+    const foods = foodSeedItems("menu").map((item) => item && item.name).filter(Boolean);
+    const activities = FUN.filter((item) => !["address", "phone"].includes(item.type)).map((item) => item.name).filter(Boolean);
+    const plans = [];
+    const total = Math.max(8, Math.min(16, foods.length || 8));
+    for (let i = 0; i < total; i++) {
+      const food = foods[i % Math.max(foods.length, 1)] || "喜欢的晚餐";
+      const activity = activities[(i * 3 + 1) % Math.max(activities.length, 1)] || "散散步";
+      plans.push({
+        text: `一起吃${food}，然后${activity}`,
+        hint: i % 3 === 0 ? "今天不赶时间，慢慢待在一起。" : (i % 3 === 1 ? "普通的一天，也值得认真收藏。" : "如果都不想选，那就牵手出去走走。")
+      });
+    }
+    plans.push(
+      { text: "选一套新皮肤，一起开一局王者荣耀", hint: "小乔、大乔与杨玉环的 13 套动作素材都已经准备好了。" },
+      { text: "翻一遍相册，再补一张今天的照片", hint: "让今天也成为以后会想念的一页。" },
+      { text: "什么也不安排，靠在一起看一部电影", hint: "最舒服的约会，也可以没有行程表。" }
+    );
+    let index = new Date().getDate() % plans.length;
+    const show = () => {
+      const plan = plans[index];
+      if ($("planText")) $("planText").textContent = plan.text;
+      if ($("planHint")) $("planHint").textContent = plan.hint;
+    };
+    show();
+    if ($("planBtn")) $("planBtn").onclick = () => {
+      index = (index + 1 + Math.floor(Math.random() * Math.max(1, plans.length - 1))) % plans.length;
+      show();
+      $("planBtn").classList.remove("pop");
+      void $("planBtn").offsetWidth;
+      $("planBtn").classList.add("pop");
+    };
+  }
+
   function parseDate(value) {
     const parts = String(value || "").split("-").map(Number);
     if (parts.length < 3 || parts.some(Number.isNaN)) return new Date(2023, 11, 31);
@@ -149,12 +261,206 @@
     };
   }
 
+  /* ============ 登录场景：像素海边黄昏 · 牵手漫步（宫崎骏 / 新海诚氛围） ============ */
+  function setupGateScene() {
+    const cv = $("gateCanvas");
+    if (!cv) return;
+    const W = 120, H = 68; // 像素网格（整体放大，呈现像素质感）
+    cv.width = W; cv.height = H;
+    const ctx = cv.getContext("2d");
+
+    // ---- 静态层：天空 / 太阳 / 大海 / 远山 / 沙滩 ----
+    const base = document.createElement("canvas");
+    base.width = W; base.height = H;
+    const b = base.getContext("2d");
+    const circ = (x, y, r, col) => {
+      b.fillStyle = col;
+      for (let dy = -r; dy <= r; dy++)
+        for (let dx = -r; dx <= r; dx++)
+          if (dx * dx + dy * dy <= r * r) b.fillRect(x + dx, y + dy, 1, 1);
+    };
+    // 天空（蓝 → 粉 渐变，梦幻晚霞）
+    const sky = ["#0c1233", "#1b2a63", "#2e3f8e", "#4a5db8", "#6b7ad0", "#8f8ad4", "#b59ade", "#d5abe0", "#eec2e2", "#ffd9ec"];
+    for (let y = 0; y < 44; y++) {
+      const t = y / 43;
+      b.fillStyle = sky[Math.min(sky.length - 1, Math.floor(t * sky.length))];
+      b.fillRect(0, y, W, 1);
+    }
+    // 星星（夜空高区）
+    for (let i = 0; i < 10; i++) {
+      b.fillStyle = "rgba(255,255,255,.5)";
+      b.fillRect((i * 37 + 5) % W, 2 + (i * 7) % 9, 1, 1);
+    }
+    // 柔粉色暮色光球（贴近海平面）
+    const sunX = 90, sunY = 40;
+    circ(sunX, sunY, 8, "rgba(233,160,220,.22)");
+    circ(sunX, sunY, 6, "rgba(255,190,228,.38)");
+    circ(sunX, sunY, 4, "#ffd0e8");
+    circ(sunX, sunY, 3, "#fff0f8");
+    // 大海（蓝紫）
+    const sea = ["#8f9ee0", "#7286d4", "#5a6cc2", "#46509f", "#353a80", "#2a2c66"];
+    for (let y = 44; y < 60; y++) {
+      b.fillStyle = sea[Math.min(5, Math.floor(((y - 44) / 16) * 6))];
+      b.fillRect(0, y, W, 1);
+    }
+    // 光球倒影光柱（粉色）
+    for (let y = 44; y < 59; y++) {
+      const wdt = Math.max(1, 5 - ((y - 44) >> 2));
+      b.fillStyle = "rgba(255,196,230,.55)";
+      b.fillRect(sunX - (wdt >> 1), y, wdt, 1);
+    }
+    // 远山剪影
+    const hill = (hx, baseY, hw, hh, col) => {
+      b.fillStyle = col;
+      for (let x = hx - hw; x <= hx + hw; x++) {
+        const h = Math.max(0, hh - Math.floor(Math.abs(x - hx) * hh / hw));
+        b.fillRect(x, baseY - h, 1, h + 1);
+      }
+    };
+    hill(16, 46, 26, 15, "rgba(58,38,92,.9)");
+    hill(102, 46, 32, 11, "rgba(74,48,108,.85)");
+    hill(116, 46, 15, 7, "rgba(86,58,122,.75)");
+    // 沙滩（淡粉紫的暮色暖沙）
+    for (let y = 60; y < H; y++) {
+      const t = (y - 60) / (H - 60);
+      b.fillStyle = t < .35 ? "#e4c6d4" : (t < .75 ? "#d6a9c6" : "#c595b8");
+      b.fillRect(0, y, W, 1);
+    }
+    // 沙面噪点
+    for (let i = 0; i < 40; i++) {
+      b.fillStyle = "rgba(110,70,110,.28)";
+      b.fillRect((i * 29 + 9) % W, 61 + (i * 11) % 6, 1, 1);
+    }
+    // ---- 动态层：流云 / 海面闪点 / 飞鸟 / 牵手情侣 / 冒爱心 ----
+    const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const t0 = performance.now();
+
+    const drawCloud = (x, y, col, a) => {
+      ctx.globalAlpha = a == null ? 1 : a;
+      ctx.fillStyle = col;
+      ctx.fillRect(x, y, 9, 2);
+      ctx.fillRect(x + 2, y - 1, 5, 1);
+      ctx.globalAlpha = 1;
+    };
+    const drawBird = (x, y) => {
+      ctx.fillStyle = "#3a2a4a";
+      ctx.fillRect(x, y, 1, 1);
+      ctx.fillRect(x + 1, y - 1, 2, 1);
+      ctx.fillRect(x + 3, y, 1, 1);
+    };
+    const drawHeart = (x, y) => {
+      ctx.fillStyle = "#ff9bbd";
+      ctx.fillRect(x, y, 1, 1);
+      ctx.fillRect(x + 2, y, 1, 1);
+      ctx.fillRect(x + 1, y - 1, 1, 1);
+      ctx.fillRect(x + 1, y + 1, 1, 1);
+    };
+    // 牵手情侣（背影 · 男孩酒红褂 / 女孩棕长发白卫衣）
+    const drawCouple = (bx, by, f) => {
+      // 男孩腿
+      ctx.fillStyle = "#26202e";
+      if (f) { ctx.fillRect(bx + 1, by, 1, 4); ctx.fillRect(bx + 4, by, 1, 4); }
+      else { ctx.fillRect(bx, by, 1, 4); ctx.fillRect(bx + 5, by, 1, 4); }
+      ctx.fillStyle = "#7c4456";            // 酒红外套
+      ctx.fillRect(bx - 1, by - 5, 7, 5);
+      ctx.fillRect(bx + 5, by - 4, 2, 2);   // 伸向女孩的手
+      ctx.fillStyle = "#33243a";            // 头发
+      ctx.fillRect(bx, by - 10, 5, 5);
+      // 女孩
+      ctx.fillStyle = "#453a52";            // 裙
+      ctx.fillRect(bx + 8, by - 2, 5, 2);
+      ctx.fillStyle = "#26202e";
+      if (f) { ctx.fillRect(bx + 8, by, 1, 4); ctx.fillRect(bx + 11, by, 1, 4); }
+      else { ctx.fillRect(bx + 7, by, 1, 4); ctx.fillRect(bx + 12, by, 1, 4); }
+      ctx.fillStyle = "#eceaf2";            // 白卫衣
+      ctx.fillRect(bx + 7, by - 7, 6, 5);
+      ctx.fillStyle = "#5c3a2c";            // 棕色长发
+      ctx.fillRect(bx + 6, by - 12, 8, 5);
+      ctx.fillRect(bx + 6, by - 7, 1, 4);
+      ctx.fillRect(bx + 13, by - 7, 1, 4);
+      ctx.fillStyle = "#6b4433";
+      ctx.fillRect(bx + 7, by - 13, 6, 4);
+    };
+
+    const drawFrame = () => {
+      const t = (performance.now() - t0) / 1000;
+      ctx.drawImage(base, 0, 0);
+      // 顶部星闪
+      for (let i = 0; i < 4; i++) {
+        if ((Math.floor(t * 2) + i) % 3 === 0) {
+          ctx.fillStyle = "rgba(255,255,255,.85)";
+          ctx.fillRect((i * 47 + 11) % W, 3 + (i * 9) % 7, 1, 1);
+        }
+      }
+      // 流云（粉紫色）
+      drawCloud(((t * 1.6) % (W + 60)) - 30, 7, "#b9a2e6", 0.9);
+      drawCloud(((t * 1.1 + 60) % (W + 60)) - 30, 15, "#f2c4e6", 0.8);
+      // 海面闪点（粉色系）
+      for (let i = 0; i < 14; i++) {
+        const sx = ((i * 37 + Math.floor(t * 6) * 11) % (W - 2)) + 1;
+        const sy = 46 + ((i * 13) % 12);
+        ctx.fillStyle = i % 2 ? "#ffd2e8" : "#ffffff";
+        ctx.globalAlpha = 0.5;
+        ctx.fillRect(sx, sy, 1, 1);
+      }
+      ctx.globalAlpha = 1;
+      // 飞鸟
+      drawBird(((t * 5 + 24) % (W + 20)) - 10, 13 - Math.sin(t) * 2);
+      drawBird(((t * 4 + 84) % (W + 20)) - 10, 9 + Math.sin(t * 1.3) * 2);
+      // 牵手情侣沿沙滩漫步（从右往左缓缓走过，循环）
+      const cx = Math.round(((t * 8) % (W + 44)) - 22);
+      drawCouple(cx, 64, Math.floor(t * 2.5) % 2);
+      // 偶发冒起的小爱心
+      const hp = Math.floor(t * 1.6) % 5;
+      if (hp < 4 && Math.sin(t * 1.6) > 0.2 && cx > -4 && cx < W - 4) {
+        drawHeart(cx + 7, 48 - ((Math.floor(t * 4) + hp) % 8));
+      }
+    };
+
+    drawFrame();
+    if (!reduce) setInterval(drawFrame, 130);
+  }
+
+  /* ============ 登录页风景轮播（自动 + 手动切换） ============ */
+  function setupGateCarousel() {
+    const slides = $$(".gate-slide");
+    if (!slides.length) return;
+    const dotsBox = $("gateDots");
+    const tag = $("gateTag");
+    let idx = 0;
+    let timer = null;
+    const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    dotsBox.innerHTML = slides.map((s, i) =>
+      `<button type="button" class="gate-dot${i === 0 ? " on" : ""}" data-i="${i}" aria-label="第 ${i + 1} 张"></button>`
+    ).join("");
+
+    function show(i) {
+      idx = (i + slides.length) % slides.length;
+      slides.forEach((s, n) => s.classList.toggle("on", n === idx));
+      dotsBox.querySelectorAll(".gate-dot").forEach((d, n) => d.classList.toggle("on", n === idx));
+      if (tag && slides[idx].dataset.label) tag.textContent = slides[idx].dataset.label;
+    }
+
+    function startAuto() {
+      if (reduce) return;
+      clearInterval(timer);
+      timer = setInterval(() => show(idx + 1), 5000);
+    }
+
+    $("gatePrev").onclick = () => { show(idx - 1); startAuto(); };
+    $("gateNext").onclick = () => { show(idx + 1); startAuto(); };
+    dotsBox.onclick = (e) => {
+      const d = e.target.closest("[data-i]");
+      if (!d) return;
+      show(Number(d.dataset.i));
+      startAuto();
+    };
+    startAuto();
+  }
+
   /* ============ 门禁 ============ */
   function setupGate() {
-    const herName = cfg.herName || "小颖";
-    const myName = cfg.myName || "小栋";
-    const himCode = String(LOGIN.him || "000");
-    $("gateHint").textContent = herName + "口令 = 上面的天数 · " + myName + "口令 = " + himCode;
     $("gateBtn").onclick = tryGate;
     $("gateInput").addEventListener("keydown", (e) => {
       if (e.key === "Enter") tryGate();
@@ -211,6 +517,7 @@
     $$(".tab").forEach((b) => b.classList.toggle("is-on", b.dataset.view === name));
     $$(".view").forEach((v) => v.classList.toggle("is-on", v.id === "view-" + name));
     $("app").dataset.active = name;
+    if ($("topViewLabel")) $("topViewLabel").textContent = VIEW_LABELS[name] || name;
     closeRail(); // 手机端切页后收起抽屉
     if (name === "chat") safe(() => renderChat()); // 每次进聊天都刷新身份
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -225,20 +532,32 @@
       $("cMins").textContent = pad(t.mins);
       $("cSecs").textContent = pad(t.secs);
       $("gateDays").textContent = t.days;
+      if ($("gateH")) {
+        $("gateH").textContent = pad(t.hours);
+        $("gateM").textContent = pad(t.mins);
+        $("gateS").textContent = pad(t.secs);
+      }
       $("heroNum").textContent = t.days;
       $("statDays").textContent = t.days;
       $("statHours").textContent = t.days * 24 + t.hours;
       $("statSunsets").textContent = t.days;
       const remain = 1000 - t.days;
+      const progress = Math.max(0, Math.min(100, t.days / 10));
+      if ($("railDay")) $("railDay").textContent = "DAY " + String(t.days).padStart(3, "0");
+      if ($("milestoneFill")) $("milestoneFill").style.width = progress + "%";
+      if ($("milestonePercent")) $("milestonePercent").textContent = progress.toFixed(1) + "%";
       if (remain > 0) {
         $("heroKicker").textContent = "UNTIL 1000";
         $("heroNote").textContent = "还差 " + remain + " 天";
+        if ($("milestoneText")) $("milestoneText").textContent = "距离第 1000 天，还有 " + remain + " 天";
       } else if (remain === 0) {
         $("heroKicker").textContent = "TODAY";
         $("heroNote").textContent = "满 1000 天了";
+        if ($("milestoneText")) $("milestoneText").textContent = "第 1000 天，今天正式解锁";
       } else {
         $("heroKicker").textContent = "1000 DAYS";
         $("heroNote").textContent = "第 1000 天已经过去，日子还在写";
+        if ($("milestoneText")) $("milestoneText").textContent = "第 1000 天已收藏，故事继续";
       }
       if (t.days !== lastDays) {
         lastDays = t.days;
@@ -262,7 +581,10 @@
       buddy("ying", "assets/chars/outfits/cap-walk.gif"),
       buddy("dong", "assets/chars/dong-idle.gif"),
       buddy("ying", "assets/chars/outfits/tee-walk.gif"),
-      buddy("ying", "assets/chars/outfits/seaside-walk.gif")
+      buddy("ying", "assets/chars/outfits/seaside-walk.gif"),
+      buddy("ying", "assets/chars/outfits/flower-walk.gif"),
+      buddy("ying", "assets/chars/outfits/blackcoat-walk.gif"),
+      buddy("ying", "assets/chars/outfits/winter-walk.gif")
     ].join("");
     $("paradeTrack").innerHTML = bits + bits;
   }
@@ -317,10 +639,10 @@
 
   function applySprite() {
     $("runwayYing").src = `assets/chars/outfits/${outfit}-${action}.gif`;
-    $("heroYing").src = `assets/chars/outfits/${outfit}-wave.gif`;
+    if ($("heroYing")) $("heroYing").src = `assets/chars/outfits/${outfit}-wave.gif`;
     const dong = { idle: "dong-idle.gif", wave: "dong-wave.gif", walk: "dong-walk.gif", jump: "dong-laugh.gif" };
     $("runwayDong").src = "assets/chars/" + (dong[action] || "dong-idle.gif");
-    $("heroDong").src = "assets/chars/dong-wave.gif";
+    if ($("heroDong")) $("heroDong").src = "assets/chars/dong-wave.gif";
   }
 
   /* ============ 事件 ============ */
@@ -333,6 +655,7 @@
     const list = $("eventList");
     const items = allEvents();
     if ($("eventCount")) $("eventCount").textContent = items.length + " 个记录";
+    if ($("hubEventCount")) $("hubEventCount").textContent = items.length;
     if (!items.length) {
       list.innerHTML = ["第一件事", "一次旅行", "一个普通的晚上", "想记住的吵架和好", "过节", "第 1000 天"]
         .map((t) => `<div class="ghost-card">空位 · ${t}</div>`).join("");
@@ -417,6 +740,75 @@
     els.forEach((el) => revealObs.observe(el));
   }
 
+  /* ============ 百变小颖 · 静态角色图鉴 ============ */
+  function setupVariants() {
+    const tabs = $$("[data-variant-hero]");
+    if (!tabs.length || !$("variantGallery")) return;
+    tabs.forEach((btn) => {
+      btn.onclick = () => {
+        curVariantHero = btn.dataset.variantHero;
+        curVariantSkin = VARIANT_HEROES[curVariantHero].skins[0].id;
+        renderVariants();
+      };
+    });
+    renderVariants();
+  }
+
+  function renderVariants() {
+    const hero = VARIANT_HEROES[curVariantHero];
+    if (!hero) return;
+    let skinIndex = hero.skins.findIndex((skin) => skin.id === curVariantSkin);
+    if (skinIndex < 0) {
+      skinIndex = 0;
+      curVariantSkin = hero.skins[0].id;
+    }
+    const skin = hero.skins[skinIndex];
+    const view = $("view-variants");
+    view.style.setProperty("--variant-tone", hero.tone);
+
+    $$("[data-variant-hero]").forEach((btn) => {
+      const on = btn.dataset.variantHero === curVariantHero;
+      btn.classList.toggle("is-on", on);
+      btn.setAttribute("aria-selected", String(on));
+    });
+    $("variantTitle").textContent = hero.name + " · " + skin.name;
+    $("variantMeta").textContent = "7 种情绪静态图 · 透明背景 · 点击可放大查看";
+    $("variantIndex").textContent = String(skinIndex + 1).padStart(2, "0") + " / " + String(hero.skins.length).padStart(2, "0");
+
+    $("variantSkinTabs").innerHTML = hero.skins.map((item, index) =>
+      `<button type="button" class="variant-skin${item.id === skin.id ? " is-on" : ""}" data-variant-skin="${item.id}">
+        <span>${String(index + 1).padStart(2, "0")}</span>${escapeHtml(item.name)}
+      </button>`
+    ).join("");
+    $$('[data-variant-skin]', $("variantSkinTabs")).forEach((btn) => {
+      btn.onclick = () => {
+        curVariantSkin = btn.dataset.variantSkin;
+        renderVariants();
+      };
+    });
+
+    const items = VARIANT_MOODS.map((mood, index) => ({
+      src: `assets/variants/${curVariantHero}/${skin.id}-${mood.id}.png`,
+      caption: `小颖 · ${hero.name} · ${skin.name} · ${mood.name}`,
+      mood,
+      index
+    }));
+    $("variantGallery").innerHTML = items.map((item) =>
+      `<button type="button" class="variant-card" data-variant-image="${item.index}" aria-label="查看${escapeAttr(item.caption)}大图">
+        <span class="variant-card-no">0${item.index + 1}</span>
+        <span class="variant-card-mark">${item.mood.mark}</span>
+        <img class="pixel" src="${item.src}" alt="${escapeAttr(item.caption)}" loading="lazy" decoding="async" />
+        <span class="variant-card-caption"><b>${item.mood.name}</b><small>${escapeHtml(skin.name)}</small></span>
+      </button>`
+    ).join("");
+    $$('[data-variant-image]', $("variantGallery")).forEach((btn) => {
+      btn.onclick = () => {
+        lbList = items.map((item) => ({ src: item.src, caption: item.caption }));
+        openLightbox(Number(btn.dataset.variantImage));
+      };
+    });
+  }
+
   /* ============ 相册 ============ */
   function allPhotos() {
     const fromCfg = Array.isArray(cfg.photos) ? cfg.photos : [];
@@ -426,6 +818,7 @@
   function renderAlbum() {
     const grid = $("albumGrid");
     const photos = allPhotos();
+    if ($("hubPhotoCount")) $("hubPhotoCount").textContent = photos.length;
     lbList = photos.map((p) => (typeof p === "string" ? { src: p, caption: "" } : p));
     if (!photos.length) {
       grid.innerHTML = Array.from({ length: 8 }, () =>
@@ -452,7 +845,10 @@
       };
     });
     grid.querySelectorAll("[data-lb]").forEach((card) => {
-      card.querySelector("img").onclick = () => openLightbox(Number(card.dataset.lb));
+      card.querySelector("img").onclick = () => {
+        lbList = allPhotos().map((p) => (typeof p === "string" ? { src: p, caption: "" } : p));
+        openLightbox(Number(card.dataset.lb));
+      };
     });
   }
 
@@ -609,11 +1005,30 @@
   }
 
   /* ============ 玩乐 ============ */
+  function funVisual(item) {
+    const meta = FUN_VISUALS[item.id] || { icon: "✦", tag: "TOGETHER", line: item.note || "一起做点喜欢的事。", tone: "#48b9c8", image: "assets/chars/ying-wave.gif" };
+    return `<div class="fun-detail-hero" style="--fun-tone:${meta.tone}">
+      <div class="fun-detail-copy">
+        <span>${meta.tag}</span>
+        <h3>${meta.icon} ${escapeHtml(item.name)}</h3>
+        <p>${escapeHtml(meta.line)}</p>
+      </div>
+      <div class="fun-detail-art${meta.pair ? " is-pair" : ""}">
+        <i></i><img class="pixel" src="${meta.image}" alt="${escapeAttr(item.name)}角色插画" />
+      </div>
+    </div>`;
+  }
+
   function setupFun() {
     const DOT_COLORS = ["#e878bc", "#9d8cf0", "#5adce6", "#e4c07a", "#8ae6c4", "#ff9d7a", "#7fb8f7", "#f08a5a", "#f2a8d4"];
-    $("funList").innerHTML = FUN.map((f, i) =>
-      `<button type="button" class="fun-btn" data-fun="${f.id}"><span class="dot" style="background:${DOT_COLORS[i % DOT_COLORS.length]};box-shadow:0 0 0 3px ${DOT_COLORS[i % DOT_COLORS.length]}2e"></span><span>${escapeHtml(f.name)}</span></button>`
-    ).join("") || `<div class="ghost-card">在 js/config.js 里添加 fun</div>`;
+    $("funList").innerHTML = FUN.map((f, i) => {
+      const visual = FUN_VISUALS[f.id] || { icon: "✦", tag: "TOGETHER", tone: DOT_COLORS[i % DOT_COLORS.length] };
+      return `<button type="button" class="fun-btn" data-fun="${f.id}" style="--fun-tone:${visual.tone}">
+        <span class="fun-btn-icon">${visual.icon}</span>
+        <span class="fun-btn-copy"><b>${escapeHtml(f.name)}</b><small>${visual.tag}</small></span>
+        <span class="fun-btn-arrow">›</span>
+      </button>`;
+    }).join("") || `<div class="ghost-card">在 js/config.js 里添加 fun</div>`;
     $("funList").onclick = (e) => {
       const btn = e.target.closest("[data-fun]");
       if (!btn) return;
@@ -628,9 +1043,14 @@
     const box = $("funDetail");
     const item = FUN.find((f) => f.id === curFun);
     if (!item) {
-      box.innerHTML = `<div class="fun-idle">
-        <span class="fun-idle-icon">▸▸</span>
-        <p>点左边任意一项，<br>右边显示对应的选择页面。</p>
+      box.innerHTML = `<div class="fun-idle-splash">
+        <div class="fun-idle-copy"><span>HAVE FUN TOGETHER</span><h3>今天，一起做点什么？</h3><p>从左侧挑一个小计划。无需盛大安排，两个人认真度过的普通时刻，也会成为很好的回忆。</p></div>
+        <div class="fun-idle-pair"><img class="pixel" src="assets/chars/outfits/hoodie-wave.gif" alt="小颖挥手" /><img class="pixel" src="assets/chars/dong-wave.gif" alt="小栋挥手" /></div>
+      </div>
+      <div class="fun-mini-grid">
+        <article><b>${String(FUN.length).padStart(2, "0")}</b><span>种今日选择</span></article>
+        <article><b>02</b><span>个人一起决定</span></article>
+        <article><b>∞</b><span>种开心可能</span></article>
       </div>`;
       return;
     }
@@ -638,22 +1058,20 @@
       const open = item.url
         ? `<a class="btn btn-accent" href="${escapeAttr(item.url)}" target="_blank" rel="noopener">打开 ${escapeHtml(item.note || item.name)}</a>`
         : `<button type="button" class="btn btn-accent" id="funLinkEmpty">还没有链接</button>`;
-      box.innerHTML = `
-        <h3>${escapeHtml(item.name)}</h3>
-        <div class="map-line"><b>${escapeHtml(item.name)}</b>：<span>${escapeHtml(item.note || "打开链接")}</span></div>
-        ${open}
-        <p class="fun-sub">${escapeHtml(item.url || "在 config.js 里给它填 url")}</p>`;
+      box.innerHTML = `${funVisual(item)}<div class="fun-detail-body">
+        <div class="fun-choice-summary"><span>当前选择</span><b>${escapeHtml(item.note || item.name)}</b><small>将在新页面打开，不会离开纪念站</small></div>
+        <div class="fun-choice-action">${open}<p class="fun-sub">${escapeHtml(item.url || "在 config.js 里给它填 url")}</p></div>
+      </div>`;
       const empty = $("funLinkEmpty");
       if (empty) empty.onclick = () => toast("这一项还没有链接，在 config.js 里填 url");
       return;
     }
     if (item.type === "platforms") {
-      box.innerHTML = `
-        <h3>选择页面</h3>
-        <p class="fun-brief">${escapeHtml(item.name)} · ${escapeHtml(item.note || "进入选择页面")}</p>
+      box.innerHTML = `${funVisual(item)}<div class="fun-detail-body">
+        <div class="fun-section-title"><span>SELECT A PLATFORM</span><b>选择播放平台</b></div>
         <div class="platform-grid">${(item.platforms || []).map((p) =>
           `<button type="button" class="platform-btn" data-url="${escapeAttr(p.url || "")}">${escapeHtml(p.name)}</button>`
-        ).join("") || `<div class="ghost-card">还没有平台，在 config.js 里填</div>`}</div>`;
+        ).join("") || `<div class="ghost-card">还没有平台，在 config.js 里填</div>`}</div></div>`;
       box.querySelectorAll(".platform-btn").forEach((b) => {
         b.onclick = () => {
           if (b.dataset.url) window.open(b.dataset.url, "_blank");
@@ -662,15 +1080,14 @@
       return;
     }
     if (item.type === "address") {
-      box.innerHTML = `
-        <h3>逛街 · 想去哪里</h3>
-        <p class="fun-brief">写上地址，点「打开地图」直接导航。</p>
+      box.innerHTML = `${funVisual(item)}<div class="fun-detail-body">
+        <div class="fun-section-title"><span>CHOOSE A DESTINATION</span><b>想去哪里</b></div>
         <label class="fun-label">地址 / 商场<input type="text" id="funAddr" maxlength="80" placeholder="例如：万象城 3 楼" value="${escapeAttr(data.address || "")}" /></label>
         <div class="row-btns">
           <button type="button" class="btn btn-accent" id="funAddrSave">保存</button>
           <button type="button" class="btn" id="funMap">打开地图</button>
           <button type="button" class="btn btn-ghost" id="funCopyAddr">复制</button>
-        </div>`;
+        </div></div>`;
       $("funAddrSave").onclick = () => {
         data.address = $("funAddr").value.trim();
         store.save(data);
@@ -690,13 +1107,13 @@
       return;
     }
     if (item.type === "phone") {
-      box.innerHTML = `
-        <h3>约会 · 联系 TA</h3>
+      box.innerHTML = `${funVisual(item)}<div class="fun-detail-body">
+        <div class="fun-section-title"><span>MAKE A DATE</span><b>联系 TA</b></div>
         <div class="contact-line">请拨：<b>${escapeHtml(cfg.phone || "")}</b></div>
         <div class="row-btns">
           <a class="btn btn-accent" href="tel:${escapeAttr(cfg.phone || "")}">拨打电话</a>
           <button type="button" class="btn btn-ghost" id="funCopyPhone">复制号码</button>
-        </div>`;
+        </div></div>`;
       $("funCopyPhone").onclick = () => copyText(cfg.phone || "");
       return;
     }
@@ -719,6 +1136,7 @@
       if (!btn) return;
       curGame = btn.dataset.game;
       curRole = null;
+      curHeroSkin = 0;
       renderGameRoles();
       renderGameCards();
     };
@@ -736,6 +1154,7 @@
     const game = GAMES.find((g) => g.id === curGame);
     if (!game) {
       panel.classList.add("hidden");
+      if ($("gameHeroShowcase")) $("gameHeroShowcase").classList.add("hidden");
       return;
     }
     panel.classList.remove("hidden");
@@ -746,6 +1165,7 @@
       const btn = e.target.closest("[data-role]");
       if (!btn) return;
       curRole = btn.dataset.role;
+      curHeroSkin = 0;
       renderGameRoles();
       toast(`已选择 ${game.name} · ${curRole}`);
     };
@@ -753,6 +1173,44 @@
       <span class="pick-line">${curRole ? `今天和 ${escapeHtml(cfg.herName || "TA")} 用「${escapeHtml(curRole)}」一起玩 ${escapeHtml(game.name)}` : `先点一个角色`}</span>
       ${game.url ? `<a class="btn btn-accent btn-sm" href="${escapeAttr(game.url)}" target="_blank" rel="noopener">去玩</a>` : ""}
     `;
+    renderGameHero();
+  }
+
+  function renderGameHero() {
+    const box = $("gameHeroShowcase");
+    if (!box) return;
+    const skins = curGame === "hok" ? HERO_SKINS[curRole] : null;
+    if (!skins || !skins.length) {
+      box.classList.add("hidden");
+      box.innerHTML = "";
+      return;
+    }
+    curHeroSkin = Math.max(0, Math.min(curHeroSkin, skins.length - 1));
+    const skin = skins[curHeroSkin];
+    box.classList.remove("hidden");
+    box.style.setProperty("--hero-color", skin.color);
+    box.innerHTML = `
+      <div class="game-hero-copy">
+        <span class="game-hero-kicker">NEW · 2026.08</span>
+        <h3>小颖版${escapeHtml(curRole)}</h3>
+        <p>已完成 ${skins.length} 套皮肤、每套 7 种静态情绪与横屏游戏循环动作。</p>
+        <div class="skin-picker" role="list" aria-label="选择${escapeAttr(curRole)}皮肤">
+          ${skins.map((item, i) => `<button type="button" class="skin-pick${i === curHeroSkin ? " is-on" : ""}" data-skin="${i}"><span>${String(i + 1).padStart(2, "0")}</span>${escapeHtml(item.name)}</button>`).join("")}
+        </div>
+        <div class="mood-chips"><span>开心</span><span>生气</span><span>无奈</span><span>难过</span><span>郁闷</span><span>兴奋</span><span>无敌</span></div>
+      </div>
+      <figure class="game-hero-stage">
+        <span class="game-playing"><i></i> PLAYING</span>
+        <div class="hero-halo" aria-hidden="true"></div>
+        <img src="${escapeAttr(skin.file)}" alt="小颖版${escapeAttr(curRole)}${escapeAttr(skin.name)}横屏游戏动作" />
+        <figcaption><b>${escapeHtml(skin.name)}</b><span>平衡动作版 · 最终</span></figcaption>
+      </figure>`;
+    $$("[data-skin]", box).forEach((btn) => {
+      btn.onclick = () => {
+        curHeroSkin = Number(btn.dataset.skin) || 0;
+        renderGameHero();
+      };
+    });
   }
 
   /* ============ 聊天 ============ */

@@ -62,7 +62,7 @@ window.LOVE = {
   // ---- Game ----
   // 每个游戏：名字 + 可选官网链接 + 角色列表 + 图标（icon，填 assets/games 里的文件）
   games: [
-    { id: "hok",   name: "王者荣耀", icon: "assets/games/pvp-official.png", url: "https://pvp.qq.com", roles: ["李白", "韩信", "貂蝉", "小乔"] },
+    { id: "hok",   name: "王者荣耀", icon: "assets/games/pvp-official.png", url: "https://pvp.qq.com", roles: ["小乔", "大乔", "杨玉环", "李白", "韩信", "貂蝉"] },
     { id: "ys",    name: "原神",     icon: "assets/games/ys-paimon.jpg", url: "https://ys.mihoyo.com", roles: ["派蒙", "荧", "胡桃", "钟离"] },
     { id: "jcc",   name: "金铲铲",   icon: "assets/games/yg-jcc.png", url: "https://yg.qq.com", roles: ["提莫", "卡莎", "瑟提", "亚索"] },
     { id: "other", name: "Others",   icon: "", url: "", roles: ["角色1", "角色2", "角色3", "角色4"] }

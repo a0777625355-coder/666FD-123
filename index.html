@@ -3,31 +3,54 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#070b1a" />
+  <meta name="theme-color" content="#f8f5f2" />
   <title>我们的第 1000 天</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=Press+Start+2P&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/style.css?v=20260830-motionfx" />
 </head>
 <body>
   <div class="bg-blobs" aria-hidden="true"></div>
   <div class="floaters" id="floaters" aria-hidden="true"></div>
 
-  <!-- ==================== 门禁页（玻璃材质 + 自定义背景图） ==================== -->
+  <!-- ==================== 门禁页（风景轮播 · 毛玻璃大相框 · 文字入框） ==================== -->
   <div id="gate" class="gate">
-    <div class="gate-bg" id="gateBg" aria-hidden="true"></div>
+    <div class="gate-blur" aria-hidden="true"></div>
     <div class="gate-veil" aria-hidden="true"></div>
-    <div class="gate-card">
+    <div class="gate-stage">
       <h1 class="gate-title" id="gateTitle">LEE &amp; CHENG</h1>
-      <p class="gate-info">距离 <b id="gateDate">2023-12-31</b>，已经过去 <b class="gate-days" id="gateDays">0</b> 天</p>
-      <div class="gate-input-row">
-        <label for="gateInput">请输入密码：</label>
-        <input id="gateInput" type="text" inputmode="numeric" autocomplete="off" placeholder="____" maxlength="8" />
-        <button type="button" id="gateBtn" class="gate-enter">进入</button>
+      <div class="gate-frame">
+        <div class="gate-slides" id="gateSlides">
+          <div class="gate-slide on" style="background-image:url('assets/home-bg.jpg')" data-label="海滨"></div>
+          <div class="gate-slide" style="background-image:url('assets/carousel/peak.jpg')" data-label="山峰"></div>
+          <div class="gate-slide" style="background-image:url('assets/carousel/chongqing.jpg')" data-label="重庆"></div>
+          <div class="gate-slide" style="background-image:url('assets/carousel/dali.jpg')" data-label="大理"></div>
+          <div class="gate-slide" style="background-image:url('assets/carousel/river.jpg')" data-label="河边"></div>
+        </div>
+        <span class="gate-frame-tag" id="gateTag">海滨</span>
+        <button type="button" class="gate-arrow prev" id="gatePrev" aria-label="上一张">‹</button>
+        <button type="button" class="gate-arrow next" id="gateNext" aria-label="下一张">›</button>
+        <div class="gate-dots" id="gateDots"></div>
+        <span class="gate-heart g1" aria-hidden="true">♥</span>
+        <span class="gate-heart g2" aria-hidden="true">♥</span>
+        <span class="gate-heart g3" aria-hidden="true">♥</span>
+        <div class="gate-info">
+          <p class="gi-sub">距离 <b id="gateDate">2023-12-31</b></p>
+          <p class="gi-main">已经过去 <b class="gate-days" id="gateDays">0</b> 天</p>
+          <p class="gi-time">
+            <span id="gateH">00</span><i>时</i><span class="tm" id="gateM">00</span><i>分</i><span class="ts" id="gateS">00</span><i>秒</i>
+          </p>
+        </div>
       </div>
-      <p class="gate-hint" id="gateHint">（密码就是天数）</p>
-      <p class="gate-err hidden" id="gateErr">口令不对，再看看上面的天数。</p>
+      <div class="gate-below">
+        <div class="gate-input-row">
+          <label for="gateInput">登录密码：</label>
+          <input id="gateInput" type="text" inputmode="numeric" autocomplete="off" placeholder="____" maxlength="8" />
+          <button type="button" id="gateBtn" class="gate-enter">进入</button>
+        </div>
+        <p class="gate-err hidden" id="gateErr">口令不对。</p>
+      </div>
     </div>
     <p class="gate-note">LEE &amp; CHENG · OUR 1000 DAYS</p>
   </div>
@@ -41,6 +64,10 @@
       <div class="brand">
         <span class="brand-title"><b id="railName">LEE</b><i>♥</i><b id="railName2">CHENG</b></span>
         <span class="brand-sub">我们的第 1000 天</span>
+      </div>
+      <div class="rail-status" aria-label="纪念站状态">
+        <span><i></i> STORY ARCHIVE</span>
+        <b id="railDay">DAY 000</b>
       </div>
       <button type="button" class="rail-chat" data-view="chat">💬 聊天</button>
       <div class="rail-select" id="railOutfits">
@@ -76,9 +103,11 @@
           <button type="button" class="tab" data-view="food">吃喝</button>
           <button type="button" class="tab" data-view="fun">玩乐</button>
           <button type="button" class="tab" data-view="game">Game</button>
+          <button type="button" class="tab" data-view="variants">百变</button>
           <button type="button" class="tab" data-view="album">相册</button>
           <button type="button" class="tab" data-view="letter">信</button>
         </nav>
+        <div class="top-view-label" aria-live="polite"><small>NOW VIEWING</small><b id="topViewLabel">时光</b></div>
         <div class="top-actions">
           <button type="button" class="mini-btn" data-open="event">＋事件</button>
           <button type="button" class="mini-btn" data-open="photo">＋照片</button>
@@ -99,6 +128,11 @@
             <p class="hero-num" id="heroNum">0</p>
             <p class="hero-sub" id="heroSub"></p>
             <p class="hero-since" id="heroSince"></p>
+            <div class="milestone-card">
+              <div class="milestone-copy"><span>1000 DAYS MILESTONE</span><b id="milestoneText">正在计算我们的时间</b></div>
+              <div class="milestone-track"><i id="milestoneFill"></i></div>
+              <small id="milestonePercent">0%</small>
+            </div>
             <div class="clock" id="clock">
               <div class="tile"><b id="cDays">0</b><span>天</span></div>
               <div class="tile"><b id="cHours">00</b><span>时</span></div>
@@ -119,6 +153,31 @@
               <span><b>2026</b><small>故事仍在继续</small></span>
             </div>
           </div>
+
+          <section class="home-hub" aria-label="常用功能入口">
+            <button type="button" class="hub-card tone-pink" data-view="food">
+              <span class="hub-no">01</span><i>♥</i><small>FOOD & DRINK</small><b>今天吃什么</b><em>打开我们的菜单</em>
+            </button>
+            <button type="button" class="hub-card tone-cyan" data-view="fun">
+              <span class="hub-no">02</span><i>✦</i><small>HAVE FUN</small><b>一起做点什么</b><em>电影、音乐与约会</em>
+            </button>
+            <button type="button" class="hub-card tone-purple" data-view="game">
+              <span class="hub-no">03</span><i>◆</i><small>GAME ROOM</small><b>选角色开一局</b><em>13 套新皮肤已加入</em>
+            </button>
+            <button type="button" class="hub-card tone-gold" data-view="album">
+              <span class="hub-no">04</span><i>▧</i><small>MEMORY BOX</small><b>收藏今天</b><em><span id="hubPhotoCount">0</span> 张照片 · <span id="hubEventCount">0</span> 个事件</em>
+            </button>
+          </section>
+
+          <section class="date-planner" aria-labelledby="planTitle">
+            <div class="plan-pixel" aria-hidden="true">✦</div>
+            <div class="plan-copy">
+              <span>OUR LITTLE PLAN · 今日小计划</span>
+              <h2 id="planTitle"><span id="planText">正在生成今天的小计划</span></h2>
+              <p id="planHint">不用纠结，交给我们的小宇宙。</p>
+            </div>
+            <button type="button" class="plan-refresh" id="planBtn"><span>↻</span> 换一个计划</button>
+          </section>
 
           <div class="parade" aria-hidden="true">
             <div class="parade-track" id="paradeTrack"></div>
@@ -270,6 +329,43 @@
             <div class="role-row" id="roleRow"></div>
             <div class="game-start" id="gameStart"></div>
           </div>
+          <div class="game-hero-showcase hidden" id="gameHeroShowcase"></div>
+        </section>
+
+        <!-- ========== 百变小颖 · 静态角色图鉴 ========== -->
+        <section class="view" id="view-variants">
+          <div class="page-head row-end">
+            <div>
+              <h2>百变小颖</h2>
+              <p>小乔、大乔与杨玉环的 13 套皮肤、91 种透明静态情绪，集中收藏在这里。</p>
+            </div>
+            <span class="variant-total"><b>91</b> STATIC LOOKS</span>
+          </div>
+
+          <div class="variant-hero-tabs" role="tablist" aria-label="选择角色">
+            <button type="button" class="variant-hero-tab is-on" data-variant-hero="xiaoqiao" role="tab" aria-selected="true">
+              <span>01</span><b>小乔</b><small>5 套 · 35 张</small>
+            </button>
+            <button type="button" class="variant-hero-tab" data-variant-hero="daqiao" role="tab" aria-selected="false">
+              <span>02</span><b>大乔</b><small>4 套 · 28 张</small>
+            </button>
+            <button type="button" class="variant-hero-tab" data-variant-hero="yangyuhuan" role="tab" aria-selected="false">
+              <span>03</span><b>杨玉环</b><small>4 套 · 28 张</small>
+            </button>
+          </div>
+
+          <section class="variant-atlas" aria-labelledby="variantTitle">
+            <header class="variant-atlas-head">
+              <div>
+                <span>YING'S HERO WARDROBE</span>
+                <h3 id="variantTitle">小乔 · 原皮</h3>
+                <p id="variantMeta">选择皮肤，再点开任意情绪查看透明大图。</p>
+              </div>
+              <strong id="variantIndex">01 / 05</strong>
+            </header>
+            <div class="variant-skin-tabs" id="variantSkinTabs" aria-label="选择皮肤"></div>
+            <div class="variant-gallery" id="variantGallery" aria-live="polite"></div>
+          </section>
         </section>
 
         <!-- ========== 相册 ========== -->
@@ -354,8 +450,8 @@
   <!-- Supabase 实时同步 SDK（本地文件，避免国内网络加载 CDN 失败） -->
   <script src="assets/vendor/supabase.min.js"></script>
 
-  <script src="js/config.js"></script>
+  <script src="js/config.js?v=20260830-yangyuhuan"></script>
   <script src="js/store.js"></script>
-  <script src="js/main.js"></script>
+  <script src="js/main.js?v=20260830-lightfun2"></script>
 </body>
 </html>
