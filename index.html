@@ -22,7 +22,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=Press+Start+2P&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/style.css?v=20260830-mobilefix1" />
+  <link rel="stylesheet" href="css/style.css?v=20260830-streamline1" />
 </head>
 <body>
   <div class="bg-blobs" aria-hidden="true"></div>
@@ -121,7 +121,6 @@
           <button type="button" class="tab" data-view="album">相册</button>
           <button type="button" class="tab" data-view="letter">信</button>
         </nav>
-        <div class="top-view-label" aria-live="polite"><small>NOW VIEWING</small><b id="topViewLabel">时光</b></div>
         <div class="top-actions">
           <button type="button" class="mini-btn" data-open="event">＋事件</button>
           <button type="button" class="mini-btn" data-open="photo">＋照片</button>
@@ -188,7 +187,6 @@
             <div class="plan-copy">
               <span>OUR LITTLE PLAN · 今日小计划</span>
               <h2 id="planTitle"><span id="planText">正在生成今天的小计划</span></h2>
-              <p id="planHint">不用纠结，交给我们的小宇宙。</p>
             </div>
             <button type="button" class="plan-refresh" id="planBtn"><span>↻</span> 换一个计划</button>
           </section>
@@ -201,7 +199,6 @@
             <div class="block-head row-end">
               <div>
                 <h2>日子与事件</h2>
-                <p>从第一次看见，到一起去过的远方。新的故事，也可以继续加进来。</p>
               </div>
               <span class="count-chip" id="eventCount">0 个记录</span>
             </div>
@@ -215,7 +212,6 @@
           <div class="page-head row-end">
             <div>
               <h2>动作馆</h2>
-              <p>两个人的动作汇总。换装 / 切动作请用左侧栏。</p>
             </div>
             <button type="button" class="btn btn-ghost btn-sm" data-view="home">← 返回时光</button>
           </div>
@@ -226,7 +222,6 @@
           <section class="block">
             <div class="block-head">
               <h2>动作汇总</h2>
-              <p>小颖的动作会跟着左侧栏选的服装与动作变化。</p>
             </div>
             <div class="move-grid">
               <figure>
@@ -276,7 +271,6 @@
           <div class="page-head row-end">
             <div>
               <h2>聊天</h2>
-              <p>给对方留句话，回来就能看到。</p>
             </div>
             <button type="button" class="btn btn-ghost btn-sm" data-view="home">← 返回时光</button>
           </div>
@@ -300,7 +294,6 @@
         <section class="view" id="view-food">
           <div class="page-head">
             <h2>吃喝</h2>
-            <p>把喜欢的菜和奶茶记下来，打个喜爱的分。</p>
           </div>
           <div class="sub-tabs" id="foodTabs">
             <button type="button" class="f-sub is-on" data-food="menu">菜单</button>
@@ -313,7 +306,6 @@
               <button type="button" class="btn btn-accent btn-sm" id="foodAdd">＋ 添加</button>
             </div>
             <div class="food-rows" id="foodRows"></div>
-            <p class="board-tip">点名字改名 · 点爱心打喜爱度 · 悬停可删除</p>
           </div>
         </section>
 
@@ -321,7 +313,6 @@
         <section class="view" id="view-fun">
           <div class="page-head">
             <h2>玩乐</h2>
-            <p>点左边一项直接打开；「看电视」会进入选择页面。</p>
           </div>
           <div class="fun-layout">
             <div class="fun-list" id="funList"></div>
@@ -335,7 +326,6 @@
         <section class="view" id="view-game">
           <div class="page-head">
             <h2>Game</h2>
-            <p>先选游戏，再点一名角色，一起出发。</p>
           </div>
           <div class="game-cards" id="gameCards"></div>
           <div class="role-panel hidden" id="rolePanel">
@@ -351,7 +341,6 @@
           <div class="page-head row-end">
             <div>
               <h2>百变小颖</h2>
-              <p>小乔、大乔与杨玉环的 13 套皮肤、91 种透明静态情绪，集中收藏在这里。</p>
             </div>
             <span class="variant-total"><b>91</b> STATIC LOOKS</span>
           </div>
@@ -371,9 +360,7 @@
           <section class="variant-atlas" aria-labelledby="variantTitle">
             <header class="variant-atlas-head">
               <div>
-                <span>YING'S HERO WARDROBE</span>
                 <h3 id="variantTitle">小乔 · 原皮</h3>
-                <p id="variantMeta">选择皮肤，再点开任意情绪查看透明大图。</p>
               </div>
               <strong id="variantIndex">01 / 05</strong>
             </header>
@@ -387,7 +374,6 @@
           <div class="page-head row-end">
             <div>
               <h2>相册</h2>
-              <p>把要留下的图自己加进来。</p>
             </div>
             <button type="button" class="btn btn-accent" data-open="photo">＋ 添加照片</button>
           </div>
@@ -402,7 +388,6 @@
         <section class="view" id="view-letter">
           <div class="page-head">
             <h2>一封信</h2>
-            <p>写给 TA 的话。</p>
           </div>
           <div class="letter-wrap">
             <div class="buddy ying peek"><img class="pixel" src="assets/chars/ying-blink.gif" alt="" /></div>
@@ -466,6 +451,6 @@
 
   <script src="js/config.js?v=20260830-yangyuhuan"></script>
   <script src="js/store.js"></script>
-  <script src="js/main.js?v=20260830-mobilefix1"></script>
+  <script src="js/main.js?v=20260830-streamline1"></script>
 </body>
 </html>

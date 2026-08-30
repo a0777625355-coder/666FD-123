@@ -119,10 +119,6 @@
       ]
     }
   };
-  const VIEW_LABELS = {
-    home: "时光", moves: "动作馆", chat: "聊天", food: "吃喝",
-    fun: "玩乐", game: "Game", variants: "百变小颖", album: "相册", letter: "信"
-  };
   const FUN_VISUALS = {
     movie:  { icon: "🎬", tag: "MOVIE NIGHT", line: "挑一部想看的，把今晚留给故事。", tone: "#e66fa8", image: "assets/chars/outfits/hoodie-idle.gif" },
     douyin: { icon: "♫", tag: "SHORT BREAK", line: "靠在一起，分享刚刚刷到的快乐。", tone: "#8e7ad9", image: "assets/chars/outfits/tee-wave.gif" },
@@ -531,7 +527,6 @@
     $$(".tab").forEach((b) => b.classList.toggle("is-on", b.dataset.view === name));
     $$(".view").forEach((v) => v.classList.toggle("is-on", v.id === "view-" + name));
     $("app").dataset.active = name;
-    if ($("topViewLabel")) $("topViewLabel").textContent = VIEW_LABELS[name] || name;
     closeRail(); // 手机端切页后收起抽屉
     if (name === "chat") safe(() => renderChat()); // 每次进聊天都刷新身份
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -786,7 +781,6 @@
       btn.setAttribute("aria-selected", String(on));
     });
     $("variantTitle").textContent = hero.name + " · " + skin.name;
-    $("variantMeta").textContent = "7 种情绪静态图 · 透明背景 · 点击可放大查看";
     $("variantIndex").textContent = String(skinIndex + 1).padStart(2, "0") + " / " + String(hero.skins.length).padStart(2, "0");
 
     $("variantSkinTabs").innerHTML = hero.skins.map((item, index) =>
@@ -1058,7 +1052,7 @@
     const item = FUN.find((f) => f.id === curFun);
     if (!item) {
       box.innerHTML = `<div class="fun-idle-splash">
-        <div class="fun-idle-copy"><span>HAVE FUN TOGETHER</span><h3>今天，一起做点什么？</h3><p>从左侧挑一个小计划。无需盛大安排，两个人认真度过的普通时刻，也会成为很好的回忆。</p></div>
+        <div class="fun-idle-copy"><h3>今天，一起做点什么？</h3></div>
         <div class="fun-idle-pair"><img class="pixel" src="assets/chars/outfits/hoodie-wave.gif" alt="小颖挥手" /><img class="pixel" src="assets/chars/dong-wave.gif" alt="小栋挥手" /></div>
       </div>
       <div class="fun-mini-grid">
@@ -1073,8 +1067,8 @@
         ? `<a class="btn btn-accent" href="${escapeAttr(item.url)}" target="_blank" rel="noopener">打开 ${escapeHtml(item.note || item.name)}</a>`
         : `<button type="button" class="btn btn-accent" id="funLinkEmpty">还没有链接</button>`;
       box.innerHTML = `${funVisual(item)}<div class="fun-detail-body">
-        <div class="fun-choice-summary"><span>当前选择</span><b>${escapeHtml(item.note || item.name)}</b><small>将在新页面打开，不会离开纪念站</small></div>
-        <div class="fun-choice-action">${open}<p class="fun-sub">${escapeHtml(item.url || "在 config.js 里给它填 url")}</p></div>
+        <div class="fun-choice-summary"><span>当前选择</span><b>${escapeHtml(item.note || item.name)}</b></div>
+        <div class="fun-choice-action">${open}</div>
       </div>`;
       const empty = $("funLinkEmpty");
       if (empty) empty.onclick = () => toast("这一项还没有链接，在 config.js 里填 url");
@@ -1082,7 +1076,7 @@
     }
     if (item.type === "platforms") {
       box.innerHTML = `${funVisual(item)}<div class="fun-detail-body">
-        <div class="fun-section-title"><span>SELECT A PLATFORM</span><b>选择播放平台</b></div>
+        <div class="fun-section-title"><b>选择播放平台</b></div>
         <div class="platform-grid">${(item.platforms || []).map((p) =>
           `<button type="button" class="platform-btn" data-url="${escapeAttr(p.url || "")}">${escapeHtml(p.name)}</button>`
         ).join("") || `<div class="ghost-card">还没有平台，在 config.js 里填</div>`}</div></div>`;
@@ -1095,7 +1089,7 @@
     }
     if (item.type === "address") {
       box.innerHTML = `${funVisual(item)}<div class="fun-detail-body">
-        <div class="fun-section-title"><span>CHOOSE A DESTINATION</span><b>想去哪里</b></div>
+        <div class="fun-section-title"><b>想去哪里</b></div>
         <label class="fun-label">地址 / 商场<input type="text" id="funAddr" maxlength="80" placeholder="例如：万象城 3 楼" value="${escapeAttr(data.address || "")}" /></label>
         <div class="row-btns">
           <button type="button" class="btn btn-accent" id="funAddrSave">保存</button>
@@ -1122,8 +1116,8 @@
     }
     if (item.type === "phone") {
       box.innerHTML = `${funVisual(item)}<div class="fun-detail-body">
-        <div class="fun-section-title"><span>MAKE A DATE</span><b>联系 TA</b></div>
-        <div class="contact-line">请拨：<b>${escapeHtml(cfg.phone || "")}</b></div>
+        <div class="fun-section-title"><b>联系 TA</b></div>
+        <div class="contact-line"><b>${escapeHtml(cfg.phone || "")}</b></div>
         <div class="row-btns">
           <a class="btn btn-accent" href="tel:${escapeAttr(cfg.phone || "")}">拨打电话</a>
           <button type="button" class="btn btn-ghost" id="funCopyPhone">复制号码</button>
@@ -1207,7 +1201,6 @@
       <div class="game-hero-copy">
         <span class="game-hero-kicker">NEW · 2026.08</span>
         <h3>小颖版${escapeHtml(curRole)}</h3>
-        <p>已完成 ${skins.length} 套皮肤、每套 7 种静态情绪与横屏游戏循环动作。</p>
         <div class="skin-picker" role="list" aria-label="选择${escapeAttr(curRole)}皮肤">
           ${skins.map((item, i) => `<button type="button" class="skin-pick${i === curHeroSkin ? " is-on" : ""}" data-skin="${i}"><span>${String(i + 1).padStart(2, "0")}</span>${escapeHtml(item.name)}</button>`).join("")}
         </div>
@@ -1431,8 +1424,7 @@
     const myName = me === "him" ? (cfg.myName || "小栋") : (cfg.herName || "小颖");
     const herName = cfg.herName || "小颖";
     const myNameCfg = cfg.myName || "小栋";
-    $("chatWho").innerHTML = "你正以「<b>" + escapeHtml(myName) + "</b>」的身份说话 · " +
-      (me === "him" ? herName : myNameCfg) + " 切换身份请重新登录" +
+    $("chatWho").innerHTML = "当前：<b>" + escapeHtml(myName) + "</b>" +
       (cloudReady ? " · <b class=\"cloud-on\">实时同步中 ✧</b>" : "");
     $("chatSync").textContent = cloudReady ? "实时同步 ✧" : (chatHandle ? "文件夹已连接 ✧" : "连接文件夹");
     if (cloudReady) $("chatSync").classList.add("btn-cyan");
