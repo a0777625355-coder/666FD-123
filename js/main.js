@@ -38,6 +38,8 @@
   let cloudReady = false; // 云端实时同步是否已连接
   let supabase = null; // 云端客户端
   let chatChannel = null; // 实时订阅通道
+  let gameSound = null;
+  let gameSoundId = "";
   let lastDays = -1;
   let toastTimer = null;
   let lbList = [];
@@ -59,6 +61,10 @@
   const start = parseDate(cfg.startDate);
   const FUN = Array.isArray(cfg.fun) ? cfg.fun : [];
   const GAMES = Array.isArray(cfg.games) ? cfg.games : [];
+  const GAME_SOUNDS = {
+    hok: { file: "assets/audio/timi.mp3", label: "王者音效" },
+    ys: { file: "assets/audio/genshin-start.mp3", label: "原神音效" }
+  };
   const HERO_SKINS = {
     "小乔": [
       { name: "原皮", file: "assets/games/heroes/xiaoqiao-original.gif", color: "#ff8fc9" },
@@ -1145,6 +1151,7 @@
       curGame = btn.dataset.game;
       curRole = null;
       curHeroSkin = 0;
+      stopGameSound();
       renderGameRoles();
       renderGameCards();
     };
@@ -1177,11 +1184,55 @@
       renderGameRoles();
       toast(`已选择 ${game.name} · ${curRole}`);
     };
+    const sound = GAME_SOUNDS[game.id];
     $("gameStart").innerHTML = `
       <span class="pick-line">${curRole ? `今天和 ${escapeHtml(cfg.herName || "TA")} 用「${escapeHtml(curRole)}」一起玩 ${escapeHtml(game.name)}` : `先点一个角色`}</span>
       ${game.url ? `<a class="btn btn-accent btn-sm" href="${escapeAttr(game.url)}" target="_blank" rel="noopener">去玩</a>` : ""}
+      ${sound ? `<button type="button" class="btn btn-ghost btn-sm game-sound-btn" id="gameSoundBtn" aria-label="播放${escapeAttr(sound.label)}">▶ ${escapeHtml(sound.label)}</button>` : ""}
     `;
+    const soundBtn = $("gameSoundBtn");
+    if (soundBtn) soundBtn.onclick = () => toggleGameSound(game.id);
     renderGameHero();
+  }
+
+  function stopGameSound() {
+    if (!gameSound) return;
+    gameSound.pause();
+    gameSound.currentTime = 0;
+    gameSound = null;
+    gameSoundId = "";
+  }
+
+  function toggleGameSound(gameId) {
+    const sound = GAME_SOUNDS[gameId];
+    if (!sound) return;
+    if (gameSound && gameSoundId === gameId && !gameSound.paused) {
+      stopGameSound();
+      const stopBtn = $("gameSoundBtn");
+      if (stopBtn) stopBtn.textContent = "▶ " + sound.label;
+      return;
+    }
+    stopGameSound();
+    const audio = new Audio(sound.file);
+    audio.preload = "metadata";
+    gameSound = audio;
+    gameSoundId = gameId;
+    const btn = $("gameSoundBtn");
+    if (btn) btn.textContent = "■ 停止音效";
+    audio.onended = () => {
+      if (gameSound !== audio) return;
+      gameSound = null;
+      gameSoundId = "";
+      const latest = $("gameSoundBtn");
+      if (latest) latest.textContent = "▶ " + sound.label;
+    };
+    audio.play().catch(() => {
+      if (gameSound !== audio) return;
+      gameSound = null;
+      gameSoundId = "";
+      if (btn) btn.textContent = "▶ " + sound.label;
+      toast("音效暂时无法播放");
+    });
   }
 
   function renderGameHero() {
