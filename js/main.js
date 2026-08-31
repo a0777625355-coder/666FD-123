@@ -39,7 +39,6 @@
   let supabase = null; // 云端客户端
   let chatChannel = null; // 实时订阅通道
   let gameSound = null;
-  let gameSoundId = "";
   let lastDays = -1;
   let toastTimer = null;
   let lbList = [];
@@ -1140,7 +1139,8 @@
       const icon = g.icon
         ? `<img class="game-icon" src="${escapeAttr(g.icon)}" alt="" />`
         : `<span class="game-icon game-icon-pix" aria-hidden="true">✦</span>`;
-      return `<button type="button" class="game-card${i === 0 ? " special" : ""}${g.id === curGame ? " is-on" : ""}" data-game="${g.id}">
+      const soundLabel = GAME_SOUNDS[g.id] ? "，点击播放音效" : "";
+      return `<button type="button" class="game-card${i === 0 ? " special" : ""}${g.id === curGame ? " is-on" : ""}" data-game="${g.id}" aria-label="${escapeAttr(g.name + soundLabel)}">
         ${icon}
         <span class="game-name">${escapeHtml(g.name)}</span>
       </button>`;
@@ -1152,6 +1152,7 @@
       curRole = null;
       curHeroSkin = 0;
       stopGameSound();
+      playGameSound(curGame);
       renderGameRoles();
       renderGameCards();
     };
@@ -1184,14 +1185,10 @@
       renderGameRoles();
       toast(`已选择 ${game.name} · ${curRole}`);
     };
-    const sound = GAME_SOUNDS[game.id];
     $("gameStart").innerHTML = `
       <span class="pick-line">${curRole ? `今天和 ${escapeHtml(cfg.herName || "TA")} 用「${escapeHtml(curRole)}」一起玩 ${escapeHtml(game.name)}` : `先点一个角色`}</span>
       ${game.url ? `<a class="btn btn-accent btn-sm" href="${escapeAttr(game.url)}" target="_blank" rel="noopener">去玩</a>` : ""}
-      ${sound ? `<button type="button" class="btn btn-ghost btn-sm game-sound-btn" id="gameSoundBtn" aria-label="播放${escapeAttr(sound.label)}">▶ ${escapeHtml(sound.label)}</button>` : ""}
     `;
-    const soundBtn = $("gameSoundBtn");
-    if (soundBtn) soundBtn.onclick = () => toggleGameSound(game.id);
     renderGameHero();
   }
 
@@ -1200,37 +1197,21 @@
     gameSound.pause();
     gameSound.currentTime = 0;
     gameSound = null;
-    gameSoundId = "";
   }
 
-  function toggleGameSound(gameId) {
+  function playGameSound(gameId) {
     const sound = GAME_SOUNDS[gameId];
     if (!sound) return;
-    if (gameSound && gameSoundId === gameId && !gameSound.paused) {
-      stopGameSound();
-      const stopBtn = $("gameSoundBtn");
-      if (stopBtn) stopBtn.textContent = "▶ " + sound.label;
-      return;
-    }
-    stopGameSound();
     const audio = new Audio(sound.file);
     audio.preload = "metadata";
     gameSound = audio;
-    gameSoundId = gameId;
-    const btn = $("gameSoundBtn");
-    if (btn) btn.textContent = "■ 停止音效";
     audio.onended = () => {
       if (gameSound !== audio) return;
       gameSound = null;
-      gameSoundId = "";
-      const latest = $("gameSoundBtn");
-      if (latest) latest.textContent = "▶ " + sound.label;
     };
     audio.play().catch(() => {
       if (gameSound !== audio) return;
       gameSound = null;
-      gameSoundId = "";
-      if (btn) btn.textContent = "▶ " + sound.label;
       toast("音效暂时无法播放");
     });
   }
