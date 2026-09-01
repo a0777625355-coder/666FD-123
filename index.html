@@ -334,6 +334,44 @@
             <div class="game-start" id="gameStart"></div>
           </div>
           <div class="game-hero-showcase hidden" id="gameHeroShowcase"></div>
+          <section class="kpl-corner" id="kplCorner" aria-labelledby="kplTitle">
+            <header class="kpl-corner-head">
+              <div>
+                <span class="kpl-kicker"><i></i> KPL MATCH CORNER</span>
+                <h3 id="kplTitle">一起追赛</h3>
+              </div>
+              <a class="kpl-live-link" href="https://www.bilibili.com/match/home/" target="_blank" rel="noopener">B站 KPL 直播 <span>↗</span></a>
+            </header>
+            <div class="kpl-team-gallery" id="kplTeamGallery" aria-label="常见 KPL 战队"></div>
+            <div class="kpl-scoreboard" id="kplFocus"></div>
+            <div class="kpl-grid">
+              <div class="kpl-fixtures">
+                <div class="kpl-subhead"><span>FIXTURES</span><b>今日赛程</b></div>
+                <div id="kplFixtureList"></div>
+                <div class="kpl-match-detail" id="kplMatchDetail" aria-live="polite"></div>
+              </div>
+              <div class="kpl-feed" id="kplFeed">
+                <div class="kpl-subhead"><span>LIVE FEED</span><b>赛场动态</b></div>
+                <div class="kpl-filters" role="tablist" aria-label="KPL 动态筛选">
+                  <button type="button" class="is-on" data-kpl-filter="all">全部</button>
+                  <button type="button" data-kpl-filter="official">官方</button>
+                  <button type="button" data-kpl-filter="result">赛果</button>
+                  <button type="button" data-kpl-filter="hot">热点</button>
+                </div>
+                <div class="kpl-updates">
+                  <article data-kpl-type="official"><i class="kpl-dot official"></i><div><span>赛事公告 · 刚刚</span><b>本周赛程已更新</b><p>打开比赛页，安排一场属于我们的观赛夜。</p></div></article>
+                  <article data-kpl-type="result"><i class="kpl-dot result"></i><div><span>赛后战报 · 48 分钟前</span><b>DRG 让二追三拿下胜利</b><p>决胜局的关键团战，值得一起回看。</p></div></article>
+                  <article data-kpl-type="hot"><i class="kpl-dot hot"></i><div><span>精彩操作 · 1 小时前</span><b>中路极限反打高光时刻</b><p>三人包夹下完成双杀，节奏瞬间被改写。</p></div></article>
+                </div>
+              </div>
+            </div>
+            <section class="kpl-team-module" aria-labelledby="teamModuleTitle">
+              <div class="kpl-subhead"><span>TEAM ARCHIVES</span><b id="teamModuleTitle">专属战队档案</b></div>
+              <div class="kpl-team-tabs" id="kplTeamTabs" role="tablist" aria-label="选择关注战队"></div>
+              <div class="kpl-team-detail" id="kplTeamDetail" aria-live="polite"></div>
+            </section>
+            <p class="kpl-note">赛程、战绩与英雄均为本地演示数据；队徽图像仅用于个人本地预览。接入官方数据源后可自动更新。</p>
+          </section>
         </section>
 
         <!-- ========== 百变小颖 · 静态角色图鉴 ========== -->

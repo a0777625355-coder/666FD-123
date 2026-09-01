@@ -30,6 +30,8 @@
   let curGame = null;
   let curRole = null;
   let curHeroSkin = 0;
+  let curKplTeam = "ag";
+  let curKplMatch = "ag-wb";
   let curVariantHero = "xiaoqiao";
   let curVariantSkin = "original";
   let curFun = null;
@@ -85,6 +87,18 @@
       { name: "寅虎·心曲", file: "assets/games/heroes/yangyuhuan-tiger.gif", color: "#efb36e" }
     ]
   };
+  const KPL_TEAMS = {
+    ag: { short: "AG", name: "成都AG超玩会", image: "assets/kpl/ag.png", tone: "#d95878", record: "5 胜 2 负", rank: "S组 · 第 2", recent: ["胜", "胜", "负", "胜", "胜"], today: "20:00 对阵 北京WB", schedule: ["09.02 · 20:00  vs 北京WB", "09.05 · 17:00  vs 杭州LGD.NBW"], note: "今日焦点对局，点击赛程可查看演示阵容。" },
+    ksg: { short: "KSG", name: "苏州KSG", image: "assets/kpl/ksg.jpg", tone: "#e6934d", record: "4 胜 3 负", rank: "A组 · 第 3", recent: ["胜", "负", "胜", "胜", "负"], today: "15:00 已结束，对阵 佛山DRG", schedule: ["09.02 · 15:00  2 : 3 佛山DRG", "09.06 · 20:00  vs 广州TTG"], note: "已结束的比赛可查看五个位置的本局英雄。" },
+    ttg: { short: "TTG", name: "广州TTG", image: "assets/kpl/ttg.png", tone: "#716cc7", record: "3 胜 4 负", rank: "A组 · 第 5", recent: ["负", "胜", "负", "胜", "负"], today: "今日轮空，下一场 09.06", schedule: ["09.06 · 20:00  vs 苏州KSG", "09.09 · 17:00  vs 北京WB"], note: "提前收藏下一场比赛，开赛时直接跳转赛事直播。" },
+    wb: { short: "WB", name: "北京WB", image: "", tone: "#d6a444", record: "4 胜 3 负", rank: "S组 · 第 4", recent: ["胜", "负", "胜", "负", "胜"], today: "20:00 对阵 成都AG超玩会", schedule: ["09.02 · 20:00  vs 成都AG超玩会"], note: "今晚焦点对局。" },
+    drg: { short: "DRG", name: "佛山DRG", image: "", tone: "#3faca9", record: "4 胜 3 负", rank: "A组 · 第 2", recent: ["胜", "胜", "负", "胜", "负"], today: "15:00 3 : 2 战胜 苏州KSG", schedule: ["09.02 · 15:00  3 : 2 苏州KSG"], note: "今日比赛已结束。" }
+  };
+  const KPL_MATCHES = [
+    { id: "ag-wb", left: "ag", right: "wb", time: "20:00", status: "即将开始 · 焦点", score: "VS", group: "常规赛 · S组", heroes: { ag: ["大司命", "沈梦溪", "公孙离", "张飞", "夏洛特"], wb: ["镜", "不知火舞", "孙尚香", "牛魔", "狂铁"] }, note: "点击开赛前卡片，可先看双方今日战绩与演示英雄池。" },
+    { id: "drg-ksg", left: "drg", right: "ksg", time: "15:00", status: "已结束", score: "3 : 2", group: "常规赛 · A组", heroes: { drg: ["澜", "王昭君", "狄仁杰", "鲁班大师", "姬小满"], ksg: ["铠", "西施", "戈娅", "朵莉亚", "达摩"] }, note: "演示数据：点击查看本场双方五个位置的使用英雄。" },
+    { id: "ksg-ttg", left: "ksg", right: "ttg", time: "09.06 20:00", status: "即将开始", score: "VS", group: "常规赛 · A组", heroes: { ksg: ["待更新", "待更新", "待更新", "待更新", "待更新"], ttg: ["待更新", "待更新", "待更新", "待更新", "待更新"] }, note: "下一场赛程已加入 KSG 与 TTG 的专属档案。" }
+  ];
   const VARIANT_MOODS = [
     { id: "happy", name: "开心", mark: "♥" },
     { id: "angry", name: "生气", mark: "✦" },
@@ -171,6 +185,7 @@
     safe(() => setupFood());
     safe(() => setupFun());
     safe(() => setupGame());
+    safe(() => setupKplCorner());
     safe(() => setupVariants());
     safe(() => setupChat());
     safe(() => setupMusic());
@@ -1250,6 +1265,45 @@
         renderGameHero();
       };
     });
+  }
+
+  /* ============ Game · KPL 赛事角 ============ */
+  function setupKplCorner() {
+    const feed = $("kplFeed");
+    const corner = $("kplCorner");
+    if (!feed || !corner) return;
+    renderKplCorner();
+    const filters = $$('[data-kpl-filter]', feed);
+    const updates = $$('[data-kpl-type]', feed);
+    filters.forEach((button) => {
+      button.onclick = () => {
+        const selected = button.dataset.kplFilter || "all";
+        filters.forEach((item) => item.classList.toggle("is-on", item === button));
+        updates.forEach((item) => item.classList.toggle("hidden", selected !== "all" && item.dataset.kplType !== selected));
+      };
+    });
+    corner.onclick = (event) => {
+      const match = event.target.closest("[data-kpl-match]");
+      const team = event.target.closest("[data-kpl-team]");
+      if (match) { curKplMatch = match.dataset.kplMatch; const item = KPL_MATCHES.find((entry) => entry.id === curKplMatch); if (item) curKplTeam = item.left; renderKplCorner(); return; }
+      if (team) { curKplTeam = team.dataset.kplTeam; renderKplCorner(); }
+    };
+  }
+
+  function kplTeamVisual(team, className = "") {
+    const fallback = `<span class="kpl-logo-fallback">${escapeHtml(team.short)}</span>`;
+    return `<span class="kpl-team-visual ${className}" style="--team-tone:${escapeAttr(team.tone)}">${team.image ? `<img src="${escapeAttr(team.image)}" alt="${escapeAttr(team.name)}队徽" onerror="this.remove()" />` : ""}${fallback}</span>`;
+  }
+
+  function renderKplCorner() {
+    const focus = KPL_MATCHES.find((item) => item.id === curKplMatch) || KPL_MATCHES[0];
+    const left = KPL_TEAMS[focus.left]; const right = KPL_TEAMS[focus.right]; const active = KPL_TEAMS[curKplTeam] || KPL_TEAMS.ag;
+    $("kplTeamGallery").innerHTML = Object.entries(KPL_TEAMS).map(([id, team]) => `<button type="button" class="kpl-team-card${id === curKplTeam ? " is-on" : ""}" data-kpl-team="${id}" aria-label="查看${escapeAttr(team.name)}档案">${kplTeamVisual(team, "kpl-gallery-logo")}<span><b>${escapeHtml(team.short)}</b><small>${escapeHtml(team.name.replace("成都", "").replace("苏州", "").replace("广州", "").replace("北京", "").replace("佛山", ""))}</small></span></button>`).join("");
+    $("kplFocus").innerHTML = `<div class="kpl-score-meta"><span>${escapeHtml(focus.status)}</span><small>${escapeHtml(focus.group)}</small></div><button type="button" class="kpl-focus-teams" data-kpl-match="${focus.id}" aria-label="查看${escapeAttr(left.name)}对阵${escapeAttr(right.name)}详情">${kplTeamVisual(left, "kpl-focus-logo")}<b>${escapeHtml(left.name)}</b><strong>${escapeHtml(focus.score)}</strong><b>${escapeHtml(right.name)}</b>${kplTeamVisual(right, "kpl-focus-logo")}</button><p>${escapeHtml(focus.time)} · <b>点击查看对局详情</b></p>`;
+    $("kplFixtureList").innerHTML = KPL_MATCHES.map((match) => { const a = KPL_TEAMS[match.left]; const b = KPL_TEAMS[match.right]; return `<button type="button" class="kpl-match${match.id === focus.id ? " is-focus" : ""}" data-kpl-match="${match.id}"><span>${escapeHtml(match.time)} · ${escapeHtml(match.status)}</span><div>${kplTeamVisual(a, "kpl-match-logo")}<b>${escapeHtml(a.short)}</b><strong>${escapeHtml(match.score)}</strong><b>${escapeHtml(b.short)}</b>${kplTeamVisual(b, "kpl-match-logo")}</div><small>${escapeHtml(match.group)}</small></button>`; }).join("");
+    $("kplMatchDetail").innerHTML = `<div class="kpl-detail-head"><span>点击对局 · DETAIL</span><b>${escapeHtml(left.short)} ${escapeHtml(focus.score)} ${escapeHtml(right.short)}</b></div><p>${escapeHtml(focus.note)}</p><div class="kpl-hero-lines"><div><span>${escapeHtml(left.short)} 使用英雄</span><p>${focus.heroes[focus.left].map((hero) => `<i>${escapeHtml(hero)}</i>`).join("")}</p></div><div><span>${escapeHtml(right.short)} 使用英雄</span><p>${focus.heroes[focus.right].map((hero) => `<i>${escapeHtml(hero)}</i>`).join("")}</p></div></div>`;
+    $("kplTeamTabs").innerHTML = ["ag", "ksg", "ttg"].map((id) => `<button type="button" role="tab" aria-selected="${id === curKplTeam}" class="${id === curKplTeam ? "is-on" : ""}" data-kpl-team="${id}">${kplTeamVisual(KPL_TEAMS[id], "kpl-tab-logo")}<span>${escapeHtml(KPL_TEAMS[id].short)}</span></button>`).join("");
+    $("kplTeamDetail").innerHTML = `<div class="kpl-profile-heading">${kplTeamVisual(active, "kpl-profile-logo")}<div><span>${escapeHtml(active.rank)}</span><h4>${escapeHtml(active.name)}</h4><p>${escapeHtml(active.today)}</p></div><strong>${escapeHtml(active.record)}</strong></div><div class="kpl-profile-grid"><div><span>近五场</span><p class="kpl-recent">${active.recent.map((item) => `<i class="${item === "胜" ? "win" : "loss"}">${item}</i>`).join("")}</p></div><div><span>接下来的比赛</span><p class="kpl-schedule">${active.schedule.map((item) => `<i>${escapeHtml(item)}</i>`).join("")}</p></div><div><span>观赛提醒</span><p>${escapeHtml(active.note)}</p></div></div>`;
   }
 
   /* ============ 聊天 ============ */
