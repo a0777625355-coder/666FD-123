@@ -31,7 +31,7 @@
   let curRole = null;
   let curHeroSkin = 0;
   let curKplTeam = "ag";
-  let curKplMatch = "ag-wb";
+  let curKplMatch = "ttg-ag-0903";
   let curVariantHero = "xiaoqiao";
   let curVariantSkin = "original";
   let curFun = null;
@@ -85,19 +85,24 @@
       { name: "星之鸣奏", file: "assets/games/heroes/yangyuhuan-melody.gif", color: "#9f91f5" },
       { name: "银翎春语", file: "assets/games/heroes/yangyuhuan-silver.gif", color: "#9ddbea" },
       { name: "寅虎·心曲", file: "assets/games/heroes/yangyuhuan-tiger.gif", color: "#efb36e" }
+    ],
+    "西施": [
+      { name: "原皮", file: "assets/games/heroes/xishi-original.gif", color: "#86b8ef" },
+      { name: "诗语江南", file: "assets/games/heroes/xishi-jiangnan.gif", color: "#65c6c5" },
+      { name: "至美·乘鲤谣", file: "assets/games/heroes/xishi-koi.gif", color: "#e7a9d7" },
+      { name: "续相思", file: "assets/games/heroes/xishi-longing.gif", color: "#ef936e" },
+      { name: "游龙清影", file: "assets/games/heroes/xishi-dragon.gif", color: "#70d4e5" }
     ]
   };
   const KPL_TEAMS = {
-    ag: { short: "AG", name: "成都AG超玩会", image: "assets/kpl/ag.png", tone: "#d95878", record: "5 胜 2 负", rank: "S组 · 第 2", recent: ["胜", "胜", "负", "胜", "胜"], today: "20:00 对阵 北京WB", schedule: ["09.02 · 20:00  vs 北京WB", "09.05 · 17:00  vs 杭州LGD.NBW"], note: "今日焦点对局，点击赛程可查看演示阵容。" },
-    ksg: { short: "KSG", name: "苏州KSG", image: "assets/kpl/ksg.jpg", tone: "#e6934d", record: "4 胜 3 负", rank: "A组 · 第 3", recent: ["胜", "负", "胜", "胜", "负"], today: "15:00 已结束，对阵 佛山DRG", schedule: ["09.02 · 15:00  2 : 3 佛山DRG", "09.06 · 20:00  vs 广州TTG"], note: "已结束的比赛可查看五个位置的本局英雄。" },
-    ttg: { short: "TTG", name: "广州TTG", image: "assets/kpl/ttg.png", tone: "#716cc7", record: "3 胜 4 负", rank: "A组 · 第 5", recent: ["负", "胜", "负", "胜", "负"], today: "今日轮空，下一场 09.06", schedule: ["09.06 · 20:00  vs 苏州KSG", "09.09 · 17:00  vs 北京WB"], note: "提前收藏下一场比赛，开赛时直接跳转赛事直播。" },
-    wb: { short: "WB", name: "北京WB", image: "", tone: "#d6a444", record: "4 胜 3 负", rank: "S组 · 第 4", recent: ["胜", "负", "胜", "负", "胜"], today: "20:00 对阵 成都AG超玩会", schedule: ["09.02 · 20:00  vs 成都AG超玩会"], note: "今晚焦点对局。" },
-    drg: { short: "DRG", name: "佛山DRG", image: "", tone: "#3faca9", record: "4 胜 3 负", rank: "A组 · 第 2", recent: ["胜", "胜", "负", "胜", "负"], today: "15:00 3 : 2 战胜 苏州KSG", schedule: ["09.02 · 15:00  3 : 2 苏州KSG"], note: "今日比赛已结束。" }
+    ag: { short: "AG", name: "成都AG超玩会", image: "assets/kpl/ag.png", tone: "#d95878", record: "待接口同步", rank: "2026 夏季赛 · 季后赛", recent: [], today: "09.03 18:30 对阵 广州TTG（BO7）", schedule: ["09.03 · 18:30  vs 广州TTG", "后续赛程待赛事中心更新"], note: "此处为 09.03 存档；当前赛事请查看赛事中心。" },
+    ksg: { short: "KSG", name: "苏州KSG", image: "assets/kpl/ksg.jpg", tone: "#e6934d", record: "待接口同步", rank: "2026 夏季赛 · 季后赛", recent: [], today: "09.03 未记录比赛", schedule: ["后续赛程待赛事中心更新"], note: "此处保存的是 09.03 资料，当前赛程尚未同步。" },
+    ttg: { short: "TTG", name: "广州TTG", image: "assets/kpl/ttg.png", tone: "#716cc7", record: "待接口同步", rank: "2026 夏季赛 · 季后赛", recent: [], today: "09.03 18:30 对阵 成都AG超玩会（BO7）", schedule: ["09.03 · 18:30  vs 成都AG超玩会", "后续赛程待赛事中心更新"], note: "此处为 09.03 存档；当前赛事请查看赛事中心。" },
+    wb: { short: "WB", name: "北京WB", image: "", tone: "#d6a444", record: "待接口同步", rank: "赛程待同步", recent: [], today: "09.03 未记录比赛", schedule: ["后续赛程待赛事中心更新"], note: "不再展示未经核验的演示战绩。" },
+    drg: { short: "DRG", name: "佛山DRG", image: "", tone: "#3faca9", record: "待接口同步", rank: "赛程待同步", recent: [], today: "09.03 未记录比赛", schedule: ["后续赛程待赛事中心更新"], note: "不再展示未经核验的演示战绩。" }
   };
   const KPL_MATCHES = [
-    { id: "ag-wb", left: "ag", right: "wb", time: "20:00", status: "即将开始 · 焦点", score: "VS", group: "常规赛 · S组", heroes: { ag: ["大司命", "沈梦溪", "公孙离", "张飞", "夏洛特"], wb: ["镜", "不知火舞", "孙尚香", "牛魔", "狂铁"] }, note: "点击开赛前卡片，可先看双方今日战绩与演示英雄池。" },
-    { id: "drg-ksg", left: "drg", right: "ksg", time: "15:00", status: "已结束", score: "3 : 2", group: "常规赛 · A组", heroes: { drg: ["澜", "王昭君", "狄仁杰", "鲁班大师", "姬小满"], ksg: ["铠", "西施", "戈娅", "朵莉亚", "达摩"] }, note: "演示数据：点击查看本场双方五个位置的使用英雄。" },
-    { id: "ksg-ttg", left: "ksg", right: "ttg", time: "09.06 20:00", status: "即将开始", score: "VS", group: "常规赛 · A组", heroes: { ksg: ["待更新", "待更新", "待更新", "待更新", "待更新"], ttg: ["待更新", "待更新", "待更新", "待更新", "待更新"] }, note: "下一场赛程已加入 KSG 与 TTG 的专属档案。" }
+    { id: "ttg-ag-0903", left: "ttg", right: "ag", time: "09.03 18:30", status: "历史赛中快照 · 2026.09.03", score: "3 : 3", group: "2026 KPL 夏季赛 · 败者组第三轮 · BO7", heroes: { ttg: ["狂铁", "赵云", "嫦娥", "敖隐", "墨子"], ag: ["马超", "猪八戒", "大乔", "公孙离", "太乙真人"] }, note: "资料日期 2026.09.03：广州TTG 对 成都AG超玩会。3:3 为原页面保存的赛中快照，下方为原记录的第六局阵容，并非实时数据或最终赛果。" }
   ];
   const VARIANT_MOODS = [
     { id: "happy", name: "开心", mark: "♥" },
@@ -135,6 +140,16 @@
         { id: "melody", name: "星之鸣奏" },
         { id: "silver", name: "银翎春语" },
         { id: "tiger", name: "寅虎·心曲" }
+      ]
+    },
+    xishi: {
+      name: "西施", tone: "#86b8ef",
+      skins: [
+        { id: "original", name: "原皮" },
+        { id: "jiangnan", name: "诗语江南" },
+        { id: "koi", name: "至美·乘鲤谣" },
+        { id: "longing", name: "续相思" },
+        { id: "dragon", name: "游龙清影" }
       ]
     }
   };
@@ -174,6 +189,8 @@
     safe(() => setupGate());
     safe(() => setupGateCarousel());
     safe(() => setupTabs());
+    ["eventSearch", "eventSort"].forEach(id => $(id)?.addEventListener(id.endsWith("Search") ? "input" : "change", renderEvents));
+    ["albumSearch", "albumSort"].forEach(id => $(id)?.addEventListener(id.endsWith("Search") ? "input" : "change", renderAlbum));
     safe(() => setupClock());
     safe(() => renderParade());
     safe(() => renderRailSelect());
@@ -236,7 +253,7 @@
       });
     }
     plans.push(
-      { text: "选一套新皮肤，一起开一局王者荣耀", hint: "小乔、大乔与杨玉环的 13 套动作素材都已经准备好了。" },
+      { text: "选一套新皮肤，一起开一局王者荣耀", hint: "小乔、大乔、杨玉环与西施的 18 套动作素材都已经准备好了。" },
       { text: "翻一遍相册，再补一张今天的照片", hint: "让今天也成为以后会想念的一页。" },
       { text: "什么也不安排，靠在一起看一部电影", hint: "最舒服的约会，也可以没有行程表。" }
     );
@@ -528,22 +545,28 @@
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape") closeRail();
     });
-    switchView("home");
+    window.addEventListener("hashchange", () => switchView(location.hash.slice(1) || "home", false));
+    switchView(location.hash.slice(1) || "home", false);
   }
 
   function openRail() {
     document.querySelector(".rail").classList.add("open");
     $("railBackdrop").classList.add("on");
     document.body.classList.add("rail-open");
+    $("menuBtn").setAttribute("aria-expanded", "true");
   }
 
   function closeRail() {
     document.querySelector(".rail").classList.remove("open");
     $("railBackdrop").classList.remove("on");
     document.body.classList.remove("rail-open");
+    $("menuBtn").setAttribute("aria-expanded", "false");
   }
 
-  function switchView(name) {
+  function switchView(name, updateHistory = true) {
+    if (!$("view-" + name)) name = "home";
+    if (updateHistory && location.hash !== "#" + name) history.pushState(null, "", "#" + name);
+    $$(".tab").forEach(b => { if (b.dataset.view === name) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); });
     $$(".tab").forEach((b) => b.classList.toggle("is-on", b.dataset.view === name));
     $$(".view").forEach((v) => v.classList.toggle("is-on", v.id === "view-" + name));
     $("app").dataset.active = name;
@@ -682,9 +705,12 @@
 
   function renderEvents() {
     const list = $("eventList");
-    const items = allEvents();
+    const query = ($("eventSearch")?.value || "").trim().toLowerCase();
+    const items = allEvents().filter(item => [item.title, item.text, item.date].join(" ").toLowerCase().includes(query));
+    if ($("eventResult")) $("eventResult").textContent = query ? `找到 ${items.length} 个相关记录` : "每一个被记住的瞬间，都让我们更靠近。";
     if ($("eventCount")) $("eventCount").textContent = items.length + " 个记录";
-    if ($("hubEventCount")) $("hubEventCount").textContent = items.length;
+    if ($("hubEventCount")) $("hubEventCount").textContent = allEvents().length;
+    if (!items.length && query) { list.innerHTML = `<p class="empty-state">没有找到这段回忆，试试另一个关键词。</p>`; return; }
     if (!items.length) {
       list.innerHTML = ["第一件事", "一次旅行", "一个普通的晚上", "想记住的吵架和好", "过节", "第 1000 天"]
         .map((t) => `<div class="ghost-card">空位 · ${t}</div>`).join("");
@@ -706,6 +732,7 @@
     const t0 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const YCOLORS = ["#e878bc", "#5adce6", "#e4c07a", "#9d8cf0", "#8ae6c4"];
     const YEAR_ORDER = Object.keys(years).sort();
+    if ($("eventSort")?.value === "desc") { YEAR_ORDER.reverse(); Object.values(years).forEach(items => items.reverse()); }
     let seq = 0;
     const html = YEAR_ORDER.map((y, yi) => {
       const ycolor = YCOLORS[yi % YCOLORS.length];
@@ -742,6 +769,7 @@
     watchReveal(list);
     list.querySelectorAll("[data-del-event]").forEach((btn) => {
       btn.onclick = () => {
+        if (!confirm("删除这条事件？建议先通过侧栏备份记录。")) return;
         data.events = data.events.filter((e) => e.id !== btn.dataset.delEvent);
         store.save(data);
         renderEvents();
@@ -845,13 +873,19 @@
 
   function renderAlbum() {
     const grid = $("albumGrid");
-    const photos = allPhotos();
-    if ($("hubPhotoCount")) $("hubPhotoCount").textContent = photos.length;
+    const query = ($("albumSearch")?.value || "").trim().toLowerCase();
+    const photos = allPhotos().filter(p => (typeof p === "string" ? p : [p.date, p.caption].join(" ")).toLowerCase().includes(query));
+    const sort = $("albumSort")?.value;
+    if (sort === "new" || sort === "old") photos.sort((a,b) => {
+      const da = a.date || "", db = b.date || "";
+      if (!da) return db ? 1 : 0; if (!db) return -1;
+      return sort === "new" ? db.localeCompare(da) : da.localeCompare(db);
+    });
+    if ($("albumResult")) $("albumResult").textContent = `${photos.length} 张照片 · 点击放大，方向键翻页`;
+    if ($("hubPhotoCount")) $("hubPhotoCount").textContent = allPhotos().length;
     lbList = photos.map((p) => (typeof p === "string" ? { src: p, caption: "" } : p));
     if (!photos.length) {
-      grid.innerHTML = Array.from({ length: 8 }, () =>
-        `<div class="ghost-photo">相册</div>`
-      ).join("");
+      grid.innerHTML = `<p class="empty-state">${query ? "没有找到照片，换一个关键词试试。" : "第一张照片，留给我们最喜欢的瞬间。点击上方添加照片。"}</p>`;
       return;
     }
     grid.innerHTML = photos.map((p, i) => {
@@ -860,21 +894,23 @@
       const id = p && p.id ? p.id : "";
       return `<figure class="photo-card" data-lb="${i}">
         ${id ? `<button type="button" class="del" data-del-photo="${id}">删除</button>` : ""}
-        <img src="${escapeAttr(src)}" alt="" loading="lazy" />
+        <img src="${escapeAttr(src)}" alt="${escapeAttr(caption || "我们的照片")}" loading="lazy" tabindex="0" role="button" aria-label="${escapeAttr("放大：" + (caption || "照片 " + (i+1)))}" />
         <figcaption>${escapeHtml(caption || "相册")}</figcaption>
       </figure>`;
     }).join("");
     grid.querySelectorAll("[data-del-photo]").forEach((btn) => {
       btn.onclick = (e) => {
         e.stopPropagation();
+        if (!confirm("删除这张照片？建议先通过侧栏备份相册。")) return;
         data.photos = data.photos.filter((p) => p.id !== btn.dataset.delPhoto);
         store.save(data);
         renderAlbum();
       };
     });
     grid.querySelectorAll("[data-lb]").forEach((card) => {
+      card.querySelector("img").onkeydown = e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); card.querySelector("img").click(); } };
       card.querySelector("img").onclick = () => {
-        lbList = allPhotos().map((p) => (typeof p === "string" ? { src: p, caption: "" } : p));
+        lbList = photos.map((p) => (typeof p === "string" ? { src: p, caption: "" } : p));
         openLightbox(Number(card.dataset.lb));
       };
     });
@@ -905,7 +941,7 @@
     lbIndex = (index + lbList.length) % lbList.length;
     const p = lbList[lbIndex];
     $("lbImg").src = typeof p === "string" ? p : p.src;
-    $("lbCaption").textContent = (typeof p === "string" ? "" : [p.date, p.caption].filter(Boolean).join(" · ")) || "";
+    $("lbCaption").textContent = `${lbIndex + 1} / ${lbList.length} · ` + (typeof p === "string" ? "" : [p.date, p.caption].filter(Boolean).join(" · ")) || "";
     $("lightbox").classList.remove("hidden");
   }
 
@@ -1246,7 +1282,7 @@
     box.style.setProperty("--hero-color", skin.color);
     box.innerHTML = `
       <div class="game-hero-copy">
-        <span class="game-hero-kicker">NEW · 2026.08</span>
+        <span class="game-hero-kicker">NEW · 2026.09</span>
         <h3>小颖版${escapeHtml(curRole)}</h3>
         <div class="skin-picker" role="list" aria-label="选择${escapeAttr(curRole)}皮肤">
           ${skins.map((item, i) => `<button type="button" class="skin-pick${i === curHeroSkin ? " is-on" : ""}" data-skin="${i}"><span>${String(i + 1).padStart(2, "0")}</span>${escapeHtml(item.name)}</button>`).join("")}
@@ -1567,15 +1603,18 @@
       const item = {
         id: store.uid(),
         date: String(fd.get("date") || ""),
-        title: String(fd.get("title") || ""),
+        title: String(fd.get("title") || "").trim(),
         text: String(fd.get("text") || ""),
         photo: ""
       };
+      if (!item.title) { toast("给这一天起一个名字吧"); return; }
       if (file) item.photo = await store.compress(file);
-      data.events.push(item);
-      store.save(data);
+      const next = { ...data, events: [...data.events, item] };
+      store.save(next);
+      data = next;
       renderEvents();
       modal.classList.add("hidden");
+      toast("这一天，已经收藏好了");
     };
 
     photoForm.onsubmit = async (e) => {
@@ -1583,18 +1622,32 @@
       const fd = new FormData(photoForm);
       const file = photoForm.photo.files[0];
       if (!file) return;
-      data.photos.push({
+      const next = { ...data, photos: [...data.photos, {
         id: store.uid(),
         src: await store.compress(file),
         date: String(fd.get("date") || ""),
         caption: String(fd.get("caption") || "")
-      });
-      store.save(data);
+      }] };
+      store.save(next);
+      data = next;
       renderAlbum();
       modal.classList.add("hidden");
       toast("照片已加入相册");
     };
 
+    [eventForm, photoForm].forEach(form => {
+      const submit = form.onsubmit;
+      form.onsubmit = async e => {
+        e.preventDefault();
+        if (form.dataset.busy) return;
+        form.dataset.busy = "true";
+        const button = form.querySelector('[type="submit"]');
+        button.disabled = true; button.textContent = "正在保存…";
+        try { await submit(e); }
+        catch (err) { toast(err.message === "storage" ? "保存失败：空间不足或存储不可用，请先备份并释放空间。" : "保存失败，请检查图片后重试。"); }
+        finally { delete form.dataset.busy; button.disabled = false; button.textContent = "保存"; }
+      };
+    });
     const drop = $("dropzone");
     drop.addEventListener("dragover", (e) => {
       e.preventDefault();
@@ -1605,16 +1658,20 @@
       e.preventDefault();
       drop.classList.remove("drag");
       const files = [...e.dataTransfer.files].filter((f) => f.type.startsWith("image/"));
+      const added = [];
+      try {
       for (const file of files) {
-        data.photos.push({
+        added.push({
           id: store.uid(),
           src: await store.compress(file),
           date: "",
           caption: file.name.replace(/\.[^.]+$/, "")
         });
       }
-      store.save(data);
+      const next = { ...data, photos: [...data.photos, ...added] };
+      store.save(next); data = next;
       renderAlbum();
+      } catch (err) { toast("照片未保存，请检查图片或存储空间后重试。"); return; }
       if (files.length) toast("照片已加入相册");
     });
 
@@ -1622,6 +1679,7 @@
     $("importFile").onchange = async (e) => {
       const file = e.target.files[0];
       if (!file) return;
+      if (!confirm("导入会合并备份与现有记录，同名菜单使用备份中的评分。继续导入？")) { e.target.value = ""; return; }
       try {
         data = await store.importJson(file);
         renderEvents();
@@ -1644,9 +1702,11 @@
     });
     $("eventForm").reset();
     $("photoForm").reset();
+    const now = new Date();
+    $("eventForm").elements.date.value = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
     modal.classList.remove("hidden");
     setTimeout(() => {
-      const first = modal.querySelector("input:not([type=file]), textarea");
+      const first = modal.querySelector("form:not(.hidden) input, form:not(.hidden) textarea");
       if (first) first.focus();
     }, 60);
   }

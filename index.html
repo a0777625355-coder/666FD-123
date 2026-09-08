@@ -22,7 +22,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=Press+Start+2P&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/style.css?v=20260830-streamline1" />
+  <link rel="stylesheet" href="css/style.css?v=20260906-secret" />
+  <link rel="stylesheet" href="css/enhancements.css?v=20260906-kpl" />
 </head>
 <body>
   <div class="bg-blobs" aria-hidden="true"></div>
@@ -60,7 +61,7 @@
       <div class="gate-below">
         <div class="gate-input-row">
           <label for="gateInput">登录密码：</label>
-          <input id="gateInput" type="text" inputmode="numeric" autocomplete="off" placeholder="____" maxlength="8" />
+          <input id="gateInput" type="password" inputmode="numeric" autocomplete="off" placeholder="____" maxlength="8" />
           <button type="button" id="gateBtn" class="gate-enter">进入</button>
         </div>
         <p class="gate-err hidden" id="gateErr">口令不对。</p>
@@ -101,6 +102,7 @@
         <img class="pixel" src="assets/chars/ying-wave.gif" alt="" />
         <img class="pixel" src="assets/chars/dong-wave.gif" alt="" />
       </div>
+      <button type="button" id="lockSite" class="rail-btn">锁定 · 切换身份</button>
       <div class="rail-foot">
         <button type="button" id="musicBtn" class="rail-btn hidden" aria-label="音乐">♪ 音乐</button>
         <button type="button" id="exportBtn" class="rail-btn">备份</button>
@@ -134,7 +136,7 @@
           <div class="hero">
             <p class="kicker" id="heroKicker">OUR 1000 DAYS</p>
             <div class="stage">
-              <div class="buddy dong"><img id="heroDong" class="pixel" src="assets/chars/dong-wave.gif" alt="小栋" /></div>
+              <div class="buddy dong secret-dong"><button type="button" id="dongSecret" class="sprite-trigger" aria-label="戳戳小栋"><img id="heroDong" class="pixel" src="assets/chars/dong-wave.gif" alt="小栋" /></button><span id="dongBubble" class="dong-bubble hidden" role="status">别打了别打了</span></div>
               <div class="buddy ying"><img id="heroYing" class="pixel" src="assets/chars/outfits/hoodie-wave.gif" alt="小颖" /></div>
             </div>
             <div class="ground"></div>
@@ -175,7 +177,7 @@
               <span class="hub-no">02</span><i>✦</i><small>HAVE FUN</small><b>一起做点什么</b><em>电影、音乐与约会</em>
             </button>
             <button type="button" class="hub-card tone-purple" data-view="game">
-              <span class="hub-no">03</span><i>◆</i><small>GAME ROOM</small><b>选角色开一局</b><em>13 套新皮肤已加入</em>
+              <span class="hub-no">03</span><i>◆</i><small>GAME ROOM</small><b>选角色开一局</b><em>18 套新皮肤已加入</em>
             </button>
             <button type="button" class="hub-card tone-gold" data-view="album">
               <span class="hub-no">04</span><i>▧</i><small>MEMORY BOX</small><b>收藏今天</b><em><span id="hubPhotoCount">0</span> 张照片 · <span id="hubEventCount">0</span> 个事件</em>
@@ -195,6 +197,11 @@
             <div class="parade-track" id="paradeTrack"></div>
           </div>
 
+          <div class="secret-mail-spot" id="secretMailSpot">
+            <button type="button" id="secretEnvelope" class="secret-envelope" aria-label="打开这封悄悄藏起来的信" aria-haspopup="dialog" aria-controls="secretLetter">
+              <svg viewBox="0 0 64 48" width="48" height="36" aria-hidden="true"><path d="M4 8H60V42H4Z" fill="#fff7eb" stroke="currentColor" stroke-width="2"/><path d="M4 42L26 23M60 42L38 23M4 8L32 29L60 8" fill="none" stroke="currentColor" stroke-width="2"/><path d="M28 24L32 28L36 24V20H32V22H28Z" fill="#d693b4"/></svg>
+            </button>
+          </div>
           <section class="block" id="timeline">
             <div class="block-head row-end">
               <div>
@@ -202,6 +209,224 @@
               </div>
               <span class="count-chip" id="eventCount">0 个记录</span>
             </div>
+            <div class="archive-tools"><label>寻找一段回忆<input type="search" id="eventSearch" placeholder="搜索事件、地点或年份…"></label><label>时间顺序<select id="eventSort"><option value="asc">从最初开始</option><option value="desc">最近的回忆优先</option></select></label></div><p id="eventResult" class="result-note" aria-live="polite"></p>
+<div class="tl-list" id="eventList"></div>
+            <button type="button" class="btn btn-accent" data-open="event">＋ 添加事件</button>
+          </section>
+        </section>
+
+        <!-- ========== 动作馆（侧边栏进入的下一级页面） ========== -->
+        <section class="view" id="view-moves">
+          <div class="page-head row-end">
+            <div>
+              <h2>动作馆</h2>
+            </div>
+            <button type="button" class="btn btn-ghost btn-sm" data-view="home">← 返回时光</button>
+          </div>
+          <div class="runway" id="movesRunway">
+            <div class="buddy dong"><img id="runwayDong" class="pixel" src="assets/chars/dong-idle.gif" alt="小栋" /></div>
+            <div class="buddy ying"><img id="runwayYing" class="pixel" src="assets/chars/outfits/hoodie-idle.gif" alt="小颖" /></div>
+          </div>
+          <section class="block">
+            <div class="block-head">
+              <h2>动作汇总</h2>
+            </div>
+            <div class="move-grid">
+              <figure>
+                <div class="buddy ying"><img class="pixel" src="assets/chars/outfits/hoodie-idle.gif" alt="" /></div>
+                <figcaption>小颖 · 呼吸</figcaption>
+              </figure>
+              <figure>
+                <div class="buddy dong"><img class="pixel" src="assets/chars/dong-idle.gif" alt="" /></div>
+                <figcaption>小栋 · 呼吸</figcaption>
+              </figure>
+              <figure>
+                <div class="buddy ying"><img class="pixel" src="assets/chars/outfits/hoodie-wave.gif" alt="" /></div>
+                <figcaption>小颖 · 挥手</figcaption>
+              </figure>
+              <figure>
+                <div class="buddy dong"><img class="pixel" src="assets/chars/dong-wave.gif" alt="" /></div>
+                <figcaption>小栋 · 挥手</figcaption>
+              </figure>
+              <figure>
+                <div class="buddy ying"><img class="pixel" src="assets/chars/ying-walk.gif" alt="" /></div>
+                <figcaption>小颖 · 走路</figcaption>
+              </figure>
+              <figure>
+                <div class="buddy dong"><img class="pixel" src="assets/chars/dong-walk.gif" alt="" /></div>
+                <figcaption>小栋 · 走路</figcaption>
+              </figure>
+              <figure>
+                <div class="buddy ying"><img class="pixel" src="assets/chars/outfits/hoodie-jump.gif" alt="" /></div>
+                <figcaption>小颖 · 跳跃</figcaption>
+              </figure>
+              <figure>
+                <div class="buddy dong"><img class="pixel" src="assets/chars/dong-laugh.gif" alt="" /></div>
+                <figcaption>小栋 · 眨眼大笑</figcaption>
+              </figure>
+            </div>
+            <div class="face-row">
+              <figure><img class="pixel face" src="assets/chars/ying-blink.gif" alt="" /><figcaption>小颖眨眼</figcaption></figure>
+              <figure><img class="pixel face" src="assets/chars/ying-heart.gif" alt="" /><figcaption>小颖心动</figcaption></figure>
+              <figure><img class="pixel face" src="assets/chars/dong-laugh.gif" alt="" /><figcaption>小栋大笑</figcaption></figure>
+              <figure><img class="pixel face couple-face" src="assets/chars/couple-heart.gif" alt="" /><figcaption>两人爱心</figcaption></figure>
+            </div>
+          </section>
+        </section>
+
+        <!-- ========== 聊天 ========== -->
+        <section class="view" id="view-chat">
+          <div class="page-head row-end">
+            <div>
+              <h2>聊天</h2>
+            </div>
+            <button type="button" class="btn btn-ghost btn-sm" data-view="home">← 返回时光</button>
+          </div>
+          <div class="chat-box">
+            <div class="chat-head">
+              <span class="chat-who" id="chatWho"></span>
+              <div class="chat-actions">
+                <button type="button" class="btn btn-ghost btn-sm" id="chatSync" title="两个浏览器连到同一个文件夹即可互相同步消息">连接文件夹</button>
+                <button type="button" class="btn btn-ghost btn-sm" id="chatClear">清空</button>
+              </div>
+            </div>
+            <div class="chat-log" id="chatLog"></div>
+            <form class="chat-form" id="chatForm" autocomplete="off">
+              <input id="chatInput" type="text" maxlength="200" placeholder="说点什么…" />
+              <button type="submit" class="btn btn-accent">发送</button>
+            </form>
+          </div>
+        </section>
+
+        <!-- ========== 吃喝 ========== -->
+        <section class="view" id="view-food">
+          <div class="page-head">
+            <h2>吃喝</h2>
+          </div>
+          <div class="sub-tabs" id="foodTabs">
+            <button type="button" class="f-sub is-on" data-food="menu">菜单</button>
+            <button type="button" class="f-sub" data-food="milktea">奶茶</button>
+          </div>
+          <p class="cat-note" id="foodNote"></p>
+          <div class="board">
+            <div class="board-head">
+              <h3 id="foodTitle">菜单</h3>
+              <button type="button" class="btn btn-accent btn-sm" id="foodAdd">＋ 添加</button>
+            </div>
+            <div class="food-rows" id="foodRows"></div>
+          </div>
+        </section>
+
+        <!-- ========== 玩乐 ========== -->
+        <section class="view" id="view-fun">
+          <div class="page-head">
+            <h2>玩乐</h2>
+          </div>
+          <div class="fun-layout">
+            <div class="fun-list" id="funList"></div>
+            <div class="fun-panel" id="funPanel">
+              <div class="fun-detail" id="funDetail"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========== Game ========== -->
+        <section class="view" id="view-game">
+          <div class="page-head">
+            <h2>Game</h2>
+          </div>
+          <div class="game-cards" id="gameCards"></div>
+          <div class="role-panel hidden" id="rolePanel">
+            <h3>请选择角色：</h3>
+            <div class="role-row" id="roleRow"></div>
+            <div class="game-start" id="gameStart"></div>
+          </div>
+          <div class="game-hero-showcase hidden" id="gameHeroShowcase"></div>
+          <section class="kpl-corner" id="kplCorner" aria-labelledby="kplTitle">
+            <header class="kpl-corner-head">
+              <div>
+                <span class="kpl-kicker"><i></i> KPL MATCH CORNER</span>
+                <h3 id="kplTitle">一起追赛</h3>
+              </div>
+              <a class="kpl-live-link" href="https://www.bilibili.com/match/home/" target="_blank" rel="noopener">B站 KPL 直播 <span>↗</span></a>
+            </header>
+            <div class="kpl-team-gallery" id="kplTeamGallery" aria-label="常见 KPL 战队"></div>
+            <div class="kpl-scoreboard" id="kplFocus"></div>
+            <div class="kpl-grid">
+              <div class="kpl-fixtures">
+                <div class="kpl-subhead"><span>FIXTURES</span><b>赛程存档 · 09.03</b></div>
+                <div id="kplFixtureList"></div>
+                <div class="kpl-match-detail" id="kplMatchDetail" aria-live="polite"></div>
+              </div>
+              <div class="kpl-feed" id="kplFeed">
+                <div class="kpl-subhead"><span>MATCH ARCHIVE</span><b>赛场动态</b></div>
+                <div class="kpl-filters" role="tablist" aria-label="KPL 动态筛选">
+                  <button type="button" class="is-on" data-kpl-filter="all">全部</button>
+                  <button type="button" data-kpl-filter="official">官方</button>
+                  <button type="button" data-kpl-filter="result">赛果</button>
+                  <button type="button" data-kpl-filter="hot">热点</button>
+                </div>
+                <div class="kpl-updates">
+                  <article data-kpl-type="official"><i class="kpl-dot official"></i><div><span>赛程核对 · 09.03</span><b>09.03 赛程记录：TTG 对 AG</b><p>18:30 开赛，2026 KPL 夏季赛季后赛败者组第三轮（BO7）。</p></div></article>
+                  <article data-kpl-type="result"><i class="kpl-dot result"></i><div><span>历史快照 · 09.03</span><b>TTG 3 : 3 AG</b><p>此为 09.03 保存的赛中快照，不代表当前状态或最终赛果。</p></div></article>
+                  <article data-kpl-type="hot"><i class="kpl-dot hot"></i><div><span>观赛入口</span><b>最终赛果以赛事中心为准</b><p>点击上方 B 站 KPL 直播，可查看即时比分和完整对局数据。</p></div></article>
+                </div>
+              </div>
+            </div>
+            <section class="kpl-team-module" aria-labelledby="teamModuleTitle">
+              <div class="kpl-subhead"><span>TEAM ARCHIVES</span><b id="teamModuleTitle">专属战队档案</b></div>
+              <div class="kpl-team-tabs" id="kplTeamTabs" role="tablist" aria-label="选择关注战队"></div>
+              <div class="kpl-team-detail" id="kplTeamDetail" aria-live="polite"></div>
+            </section>
+            <p class="kpl-note">赛程已按 09.03 公开赛事信息校正；赛中比分和第六局阵容为最近一次核对结果。战队总战绩、后续赛程将在实时接口接入后自动更新。</p>
+          </section>
+        </section>
+
+        <!-- ========== 百变小颖 · 静态角色图鉴 ========== -->
+        <section class="view" id="view-variants">
+          <div class="page-head row-end">
+            <div>
+              <h2>百变小颖</h2>
+            </div>
+            <span class="variant-total"><b>126</b> STATIC LOOKS</span>
+          </div>
+
+          <div class="variant-hero-tabs" role="tablist" aria-label="选择角色">
+            <button type="button" class="variant-hero-tab is-on" data-variant-hero="xiaoqiao" role="tab" aria-selected="true">
+              <span>01</span><b>小乔</b><small>5 套 · 35 张</small>
+            </button>
+            <button type="button" class="variant-hero-tab" data-variant-hero="daqiao" role="tab" aria-selected="false">
+              <span>02</span><b>大乔</b><small>4 套 · 28 张</small>
+            </button>
+            <button type="button" class="variant-hero-tab" data-variant-hero="yangyuhuan" role="tab" aria-selected="false">
+              <span>03</span><b>杨玉环</b><small>4 套 · 28 张</small>
+            </button>
+            <button type="button" class="variant-hero-tab" data-variant-hero="xishi" role="tab" aria-selected="false">
+              <span>04</span><b>西施</b><small>5 套 · 35 张</small>
+            </button>
+          </div>
+
+          <section class="variant-atlas" aria-labelledby="variantTitle">
+            <header class="variant-atlas-head">
+              <div>
+                <h3 id="variantTitle">小乔 · 原皮</h3>
+              </div>
+              <strong id="variantIndex">01 / 05</strong>
+            </header>
+            <div class="variant-skin-tabs" id="variantSkinTabs" aria-label="选择皮肤"></div>
+            <div class="variant-gallery" id="variantGallery" aria-live="polite"></div>
+          </section>
+        </section>
+
+        <!-- ========== 相册 ========== -->
+        <section class="view" id="view-album">
+          <div class="page-head row-end">
+            <div>
+              <h2>相册</h2>
+            </div>
+            <button type="button" class="btn btn-accent" data-open="photo">＋ 添加照片</button>
+          </div>
+          <div class="archive-tools"><label>寻找一段回忆<input type="search" id="eventSearch" placeholder="搜索事件、地点或年份…"></label><label>时间顺序<select id="eventSort"><option value="asc">从最初开始</option><option value="desc">最近的回忆优先</option></select></label></div><p id="eventResult" class="result-note" aria-live="polite"></p>
             <div class="tl-list" id="eventList"></div>
             <button type="button" class="btn btn-accent" data-open="event">＋ 添加事件</button>
           </section>
@@ -346,12 +571,12 @@
             <div class="kpl-scoreboard" id="kplFocus"></div>
             <div class="kpl-grid">
               <div class="kpl-fixtures">
-                <div class="kpl-subhead"><span>FIXTURES</span><b>今日赛程</b></div>
+                <div class="kpl-subhead"><span>FIXTURES</span><b>赛程存档 · 09.03</b></div>
                 <div id="kplFixtureList"></div>
                 <div class="kpl-match-detail" id="kplMatchDetail" aria-live="polite"></div>
               </div>
               <div class="kpl-feed" id="kplFeed">
-                <div class="kpl-subhead"><span>LIVE FEED</span><b>赛场动态</b></div>
+                <div class="kpl-subhead"><span>MATCH ARCHIVE</span><b>赛场动态</b></div>
                 <div class="kpl-filters" role="tablist" aria-label="KPL 动态筛选">
                   <button type="button" class="is-on" data-kpl-filter="all">全部</button>
                   <button type="button" data-kpl-filter="official">官方</button>
@@ -359,9 +584,9 @@
                   <button type="button" data-kpl-filter="hot">热点</button>
                 </div>
                 <div class="kpl-updates">
-                  <article data-kpl-type="official"><i class="kpl-dot official"></i><div><span>赛事公告 · 刚刚</span><b>本周赛程已更新</b><p>打开比赛页，安排一场属于我们的观赛夜。</p></div></article>
-                  <article data-kpl-type="result"><i class="kpl-dot result"></i><div><span>赛后战报 · 48 分钟前</span><b>DRG 让二追三拿下胜利</b><p>决胜局的关键团战，值得一起回看。</p></div></article>
-                  <article data-kpl-type="hot"><i class="kpl-dot hot"></i><div><span>精彩操作 · 1 小时前</span><b>中路极限反打高光时刻</b><p>三人包夹下完成双杀，节奏瞬间被改写。</p></div></article>
+                  <article data-kpl-type="official"><i class="kpl-dot official"></i><div><span>赛程核对 · 09.03</span><b>09.03 赛程记录：TTG 对 AG</b><p>18:30 开赛，2026 KPL 夏季赛季后赛败者组第三轮（BO7）。</p></div></article>
+                  <article data-kpl-type="result"><i class="kpl-dot result"></i><div><span>历史快照 · 09.03</span><b>TTG 3 : 3 AG</b><p>此为 09.03 保存的赛中快照，不代表当前状态或最终赛果。</p></div></article>
+                  <article data-kpl-type="hot"><i class="kpl-dot hot"></i><div><span>观赛入口</span><b>最终赛果以赛事中心为准</b><p>点击上方 B 站 KPL 直播，可查看即时比分和完整对局数据。</p></div></article>
                 </div>
               </div>
             </div>
@@ -370,7 +595,7 @@
               <div class="kpl-team-tabs" id="kplTeamTabs" role="tablist" aria-label="选择关注战队"></div>
               <div class="kpl-team-detail" id="kplTeamDetail" aria-live="polite"></div>
             </section>
-            <p class="kpl-note">赛程、战绩与英雄均为本地演示数据；队徽图像仅用于个人本地预览。接入官方数据源后可自动更新。</p>
+            <p class="kpl-note">资料日期：2026.09.03。此处为历史记录，未接入实时赛事数据；最新赛程及最终赛果请前往赛事中心。</p>
           </section>
         </section>
 
@@ -380,7 +605,7 @@
             <div>
               <h2>百变小颖</h2>
             </div>
-            <span class="variant-total"><b>91</b> STATIC LOOKS</span>
+            <span class="variant-total"><b>126</b> STATIC LOOKS</span>
           </div>
 
           <div class="variant-hero-tabs" role="tablist" aria-label="选择角色">
@@ -392,6 +617,9 @@
             </button>
             <button type="button" class="variant-hero-tab" data-variant-hero="yangyuhuan" role="tab" aria-selected="false">
               <span>03</span><b>杨玉环</b><small>4 套 · 28 张</small>
+            </button>
+            <button type="button" class="variant-hero-tab" data-variant-hero="xishi" role="tab" aria-selected="false">
+              <span>04</span><b>西施</b><small>5 套 · 35 张</small>
             </button>
           </div>
 
@@ -415,7 +643,8 @@
             </div>
             <button type="button" class="btn btn-accent" data-open="photo">＋ 添加照片</button>
           </div>
-          <div class="album-grid" id="albumGrid"></div>
+          <div class="archive-tools"><label>寻找一张照片<input type="search" id="albumSearch" placeholder="搜索说明或日期…"></label><label>排列方式<select id="albumSort"><option value="original">原始顺序</option><option value="new">日期从新到旧</option><option value="old">日期从旧到新</option></select></label></div><p id="albumResult" class="result-note" aria-live="polite"></p>
+<div class="album-grid" id="albumGrid"></div>
           <div class="dropzone" id="dropzone">
             把照片拖到这里，或
             <button type="button" class="btn btn-accent btn-sm" data-open="photo">选择图片</button>
@@ -446,7 +675,7 @@
   </div>
 
   <!-- ==================== 弹窗 ==================== -->
-  <div id="modal" class="modal hidden" role="dialog">
+  <div id="modal" class="modal hidden" role="dialog" aria-modal="true" aria-label="记录我们的日常">
     <div class="modal-card">
       <button type="button" class="modal-x" id="modalClose" aria-label="关闭">×</button>
 
@@ -470,7 +699,7 @@
   </div>
 
   <!-- 大图查看 -->
-  <div id="lightbox" class="lightbox hidden" role="dialog">
+  <div id="lightbox" class="lightbox hidden" role="dialog" aria-modal="true" aria-label="照片查看器">
     <button type="button" class="lb-x" id="lbClose" aria-label="关闭">×</button>
     <button type="button" class="lb-arrow" id="lbPrev" aria-label="上一张">‹</button>
     <figure>
@@ -480,6 +709,21 @@
     <button type="button" class="lb-arrow" id="lbNext" aria-label="下一张">›</button>
   </div>
 
+  <div id="secretLetter" class="modal hidden secret-letter" role="dialog" aria-modal="true" aria-labelledby="secretTitle">
+    <article class="modal-card secret-paper">
+      <button type="button" class="modal-x" id="secretClose" aria-label="收好这封信">×</button>
+      <span class="secret-eyebrow">JUST BETWEEN US · 只给你看</span>
+      <div class="secret-letter-heart" aria-hidden="true">♥</div>
+      <h2 id="secretTitle">第 1001 天，<br>也想和你一起。</h2>
+      <p>被你发现了。<br>本来想藏得再好一点，结果还是被你找到了。</p>
+      <p>1000 天不是故事的终点。之后还有很多顿饭、很多次散步，还有很多句“今天发生了一件事”，想慢慢讲给你听。</p>
+      <p>不一定每天都有什么特别的事。<br>但只要是和你一起，普通的一天，我也想好好收藏。</p>
+      <figure class="secret-photo"><img src="photos/pixel-close-selfie.jpg" alt="我们靠在一起的像素合照" loading="lazy"><figcaption>把这一刻，偷偷夹进信里。</figcaption></figure>
+      <div class="secret-wish"><span>一个小小的心愿</span><p>下一次约会，想和你吃喜欢的东西，走一段不用赶时间的路，再拍一张新的合照。</p></div>
+      <p class="secret-sign">下一个 1000 天，也慢慢写。<br><b>—— 小栋 ♥</b></p>
+      <button type="button" class="btn btn-accent" id="secretKeep">把信收好 ♥</button>
+    </article>
+  </div>
   <div class="toast" id="toast" role="status"></div>
 
   <audio id="bgm" loop preload="none"></audio>
@@ -487,8 +731,10 @@
   <!-- Supabase 实时同步 SDK（本地文件，避免国内网络加载 CDN 失败） -->
   <script src="assets/vendor/supabase.min.js"></script>
 
-  <script src="js/config.js?v=20260830-yangyuhuan"></script>
-  <script src="js/store.js"></script>
-  <script src="js/main.js?v=20260901-gamesound2"></script>
+  <script src="js/config.js?v=20260906-secret"></script>
+  <script src="js/store.js?v=20260906-secret"></script>
+  <script src="js/main.js?v=20260906-secret"></script>
+  <script src="js/upgrade.js?v=20260906-secret"></script>
+  <script src="js/kpl-live.js?v=20260906-kpl"></script>
 </body>
 </html>

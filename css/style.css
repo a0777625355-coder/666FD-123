@@ -1234,7 +1234,7 @@ img.pixel { image-rendering: pixelated; image-rendering: crisp-edges; }
   font-family:var(--pix); font-size:7px; letter-spacing:.08em;
 }
 .variant-total b { color:#ff9fd2; font-size:15px; font-weight:400; text-shadow:0 0 14px rgba(242,139,195,.6); }
-.variant-hero-tabs { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:16px; }
+.variant-hero-tabs { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:16px; }
 .variant-hero-tab {
   position:relative; overflow:hidden; display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:13px;
   min-height:82px; padding:16px 18px; border:1px solid var(--line); border-radius:16px;
@@ -1249,6 +1249,7 @@ img.pixel { image-rendering: pixelated; image-rendering: crisp-edges; }
 .variant-hero-tab.is-on { color:#ffb3da; border-color:rgba(242,139,195,.6); background:linear-gradient(145deg,rgba(242,139,195,.2),rgba(157,140,240,.1)); box-shadow:0 14px 34px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.08); }
 .variant-hero-tab[data-variant-hero="daqiao"].is-on { color:#8be8f1; border-color:rgba(103,212,229,.65); background:linear-gradient(145deg,rgba(103,212,229,.18),rgba(111,180,240,.09)); }
 .variant-hero-tab[data-variant-hero="yangyuhuan"].is-on { color:#a9f0ca; border-color:rgba(139,216,176,.65); background:linear-gradient(145deg,rgba(139,216,176,.18),rgba(239,179,110,.08)); }
+.variant-hero-tab[data-variant-hero="xishi"].is-on { color:#a8d7ff; border-color:rgba(134,184,239,.68); background:linear-gradient(145deg,rgba(134,184,239,.2),rgba(112,212,229,.09)); }
 .variant-atlas {
   --variant-tone:#f28bc3; position:relative; overflow:hidden; padding:clamp(18px,3vw,30px);
   border:1px solid color-mix(in srgb,var(--variant-tone),transparent 55%); border-radius:20px;

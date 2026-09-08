@@ -39,7 +39,8 @@
     try {
       localStorage.setItem(KEY, JSON.stringify(data));
     } catch (e) {
-      /* 存储满时忽略 */
+      window.dispatchEvent(new CustomEvent("love-storage-error"));
+      throw new Error("storage");
     }
   }
 
@@ -49,6 +50,7 @@
 
   function compress(file, max = 1400, quality = 0.82) {
     return new Promise((resolve, reject) => {
+      if (!file || !file.type.startsWith("image/") || file.size > 25 * 1024 * 1024) { reject(new Error("请选择小于 25 MB 的图片")); return; }
       const reader = new FileReader();
       reader.onerror = () => reject(new Error("read"));
       reader.onload = () => {
@@ -86,7 +88,29 @@
         const reader = new FileReader();
         reader.onload = () => {
           try {
-            const next = normalize(JSON.parse(reader.result));
+            const raw = JSON.parse(reader.result);
+            if (!raw || typeof raw !== "object" || Array.isArray(raw) ||
+                !["events", "photos", "chat", "food"].some(k => Object.hasOwn(raw, k))) throw new Error("invalid backup");
+            for (const key of ["events", "photos", "chat"]) {
+              if (raw[key] !== undefined && !Array.isArray(raw[key])) throw new Error("invalid list");
+            }
+            const safeImage = value => typeof value === "string" && /^(?:data:image\/(?:jpeg|png|webp|gif);base64,|https?:\/\/|(?:assets|photos)\/)/i.test(value);
+            const validDate = value => value === undefined || value === "" || (typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value) && !isNaN(Date.parse(value)));
+            const safeId = value => value === undefined || (typeof value === "string" && /^[a-zA-Z0-9_-]{1,100}$/.test(value));
+            if ((raw.events || []).some(e => !e || typeof e !== "object" || typeof e.title !== "string" || !validDate(e.date) || !safeId(e.id) || (e.photo && !safeImage(e.photo)))) throw new Error("invalid event");
+            if ((raw.photos || []).some(p => typeof p === "string" ? !safeImage(p) : !p || !safeImage(p.src) || !validDate(p.date) || !safeId(p.id))) throw new Error("invalid photo");
+            if ((raw.chat || []).some(m => !m || typeof m !== "object" || typeof m.text !== "string" || !safeId(m.id))) throw new Error("invalid chat");
+            if (raw.food != null) {
+              if (typeof raw.food !== "object" || Array.isArray(raw.food)) throw new Error("invalid food");
+              for (const key of ["menu", "milktea"]) if (raw.food[key] !== undefined && (!Array.isArray(raw.food[key]) || raw.food[key].some(x => !x || typeof x.name !== "string" || !Number.isFinite(x.rate) || x.rate < 1 || x.rate > 5))) throw new Error("invalid food list");
+            }
+            const current = load(), incoming = normalize(raw);
+            const merge = (a,b) => [...new Map([...a,...b].map(x => [typeof x === "string" ? x : x.id || JSON.stringify(x),x])).values()];
+            const next = { ...current, events: merge(current.events,incoming.events), photos: merge(current.photos,incoming.photos), chat: merge(current.chat,incoming.chat), address: incoming.address || current.address, food: current.food };
+            if (incoming.food) {
+              next.food = {...(current.food || {}), ...incoming.food};
+              for (const key of ["menu","milktea"]) next.food[key] = [...new Map([...(current.food?.[key] || []),...(incoming.food[key] || [])].map(x => [x.name,x])).values()];
+            }
             save(next);
             resolve(next);
           } catch (e) {
