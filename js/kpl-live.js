@@ -1,5 +1,6 @@
 (function () {
   const endpoint = 'https://yingdong1000days.a0777625355.workers.dev/api/kpl';
+  const manualEndpoint = `${endpoint}/refresh`;
   const corner = document.getElementById('kplCorner');
   if (!corner) return;
   const header = corner.querySelector('.kpl-corner-head');
@@ -7,7 +8,7 @@
   const summary = document.createElement('summary'); summary.textContent = '历史资料 · 2026.09.03（点击展开，非实时数据）'; archive.append(summary);
   [...corner.children].filter(el => el !== header).forEach(el => archive.append(el));
   const panel = document.createElement('section'); panel.className = 'kpl-live-panel'; panel.setAttribute('aria-label','KPL 赛事更新');
-  panel.innerHTML = '<div class="kpl-refresh-row"><strong>赛事近况</strong><button type="button" class="btn btn-ghost btn-sm kpl-manual-refresh" title="重新读取云端最新缓存">↻ 手动刷新</button></div><p class="kpl-refresh-note">想看最新缓存？可以随时手动刷新，不会额外调用 DeepSeek。</p><p class="kpl-update-status" role="status"></p><p class="kpl-live-copy"></p><div class="kpl-live-sources"></div><small>联网检索摘要，可能存在信息延迟；赛中比分请以赛事中心为准。</small>';
+  panel.innerHTML = '<div class="kpl-refresh-row"><strong>赛事近况</strong><button type="button" class="btn btn-ghost btn-sm kpl-manual-refresh" title="联网检索并更新 KPL 资料">↻ 手动联网更新</button></div><p class="kpl-refresh-note">点击后会调用 DeepSeek 联网检索；为避免重复消耗，5 分钟内只能更新一次。</p><p class="kpl-update-status" role="status"></p><p class="kpl-live-copy"></p><div class="kpl-live-sources"></div><small>联网检索摘要，可能存在信息延迟；赛中比分请以赛事中心为准。</small>';
   corner.append(panel,archive);
   const status = panel.querySelector('.kpl-update-status'), copy = panel.querySelector('.kpl-live-copy'), links = panel.querySelector('.kpl-live-sources'), button = panel.querySelector('button');
   let busy = false, lastAttempt = 0, lastReport = null;
@@ -27,14 +28,15 @@
     status.textContent = `${cached ? '上次保存的资料' : stale ? '资料已超过一小时，请留意时效' : '已获取最近一次云端更新'} · ${stamp}（北京时间）`;
   }
   try { const cache = JSON.parse(localStorage.getItem(cacheKey)); if (valid(cache)) show(cache,true); } catch {}
-  async function refresh() {
+  async function refresh(manual = false) {
     if (busy) return;
-    busy = true; lastAttempt = Date.now(); button.disabled = true; button.textContent = '刷新中…';
-    status.textContent = '正在获取云端赛事资料…';
+    busy = true; lastAttempt = Date.now(); button.disabled = true; button.textContent = manual ? '联网更新中…' : '读取中…';
+    status.textContent = manual ? '正在联网检索最新 KPL 资料…' : '正在获取云端赛事资料…';
     try {
-      const response = await fetch(endpoint,{cache:'no-store',credentials:'omit',signal:AbortSignal.timeout(18000)});
+      const response = await fetch(manual ? manualEndpoint : endpoint,{method:manual ? 'POST' : 'GET',cache:'no-store',credentials:'omit',signal:AbortSignal.timeout(manual ? 100000 : 18000)});
       const report = await response.json();
       if (!response.ok) {
+        if (report.error === 'REFRESH_COOLDOWN') throw Error(`请在 ${Math.max(1,Math.ceil((report.retryAfterSeconds || 60)/60))} 分钟后再手动更新`);
         if (report.error === 'NOT_CONFIGURED') throw Error('云端密钥或缓存尚未配置完成');
         if (report.error === 'WAITING_FOR_UPDATE') throw Error('等待云端第一次定时更新');
         throw Error('云端暂时无法提供更新');
@@ -47,9 +49,9 @@
       if (lastReport) show(lastReport,true);
       const hint = known.includes(e.message) ? e.message : '暂时连接不到更新服务，请检查云函数部署和网络后重试';
       status.textContent = hint + (lastReport ? '。下方保留上次资料，时间未更新。' : '。可以先查看赛事中心或展开历史资料。');
-    } finally { busy = false; button.disabled = false; button.textContent = '↻ 手动刷新'; }
+    } finally { busy = false; button.disabled = false; button.textContent = '↻ 手动联网更新'; }
   }
-  button.onclick = refresh;
+  button.onclick = () => refresh(true);
   document.addEventListener('visibilitychange',()=>{if(!document.hidden && document.getElementById('app').dataset.active==='game' && Date.now()-lastAttempt>300000) refresh();});
   refresh();
 })();
