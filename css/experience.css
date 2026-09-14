@@ -1,0 +1,160 @@
+/* 2026 experience layer: color modes, liquid glass, motion and accessibility. */
+:root {
+  --xp-bg: #f8f5f2;
+  --xp-surface: rgba(255, 255, 255, .66);
+  --xp-surface-strong: rgba(255, 255, 255, .88);
+  --xp-text: #27232b;
+  --xp-muted: #6f6672;
+  --xp-line: rgba(83, 66, 86, .15);
+  --xp-accent: #e84d92;
+  --xp-accent-2: #7357ff;
+  --xp-glow: rgba(232, 77, 146, .22);
+  color-scheme: light;
+}
+
+html[data-theme="dark"] {
+  --xp-bg: #111016;
+  --xp-surface: rgba(35, 31, 43, .66);
+  --xp-surface-strong: rgba(31, 27, 38, .92);
+  --xp-text: #f7f0f6;
+  --xp-muted: #c2b8c5;
+  --xp-line: rgba(255, 255, 255, .14);
+  --xp-accent: #ff68ad;
+  --xp-accent-2: #9a82ff;
+  --xp-glow: rgba(255, 104, 173, .25);
+  color-scheme: dark;
+}
+
+html { scroll-behavior: smooth; }
+body { background: var(--xp-bg); color: var(--xp-text); transition: background-color .35s ease, color .35s ease; }
+
+/* A thin story-progress indicator, driven by experience.js. */
+body::after {
+  content: "";
+  position: fixed;
+  z-index: 130;
+  inset: 0 auto auto 0;
+  width: var(--story-progress, 0%);
+  height: 3px;
+  background: linear-gradient(90deg, #ff4f9a, #ffb13b, #6c67ff);
+  box-shadow: 0 0 14px var(--xp-glow);
+  pointer-events: none;
+}
+
+.icon-btn { min-width: 40px; font-size: 17px; }
+.top-actions { align-items: center; }
+
+/* Liquid-glass surfaces retain readable borders and fall back cleanly. */
+.milestone-card,
+.hub-card,
+.date-planner,
+.block,
+.board,
+.fun-panel,
+.chat-box,
+.variant-atlas,
+.kpl-corner,
+.photo-card,
+.modal-card {
+  border-color: var(--xp-line);
+  box-shadow: 0 18px 52px rgba(62, 42, 66, .09), inset 0 1px 0 rgba(255,255,255,.45);
+}
+
+@supports (backdrop-filter: blur(1px)) {
+  .milestone-card,
+  .date-planner,
+  .modal-card {
+    background: var(--xp-surface);
+    backdrop-filter: blur(22px) saturate(145%);
+    -webkit-backdrop-filter: blur(22px) saturate(145%);
+  }
+}
+
+.hub-card { overflow: hidden; isolation: isolate; }
+.hub-card::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  width: 130px;
+  height: 130px;
+  right: -42px;
+  bottom: -58px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--xp-glow), transparent 70%);
+  transition: transform .35s ease;
+}
+.hub-card:hover::after { transform: scale(1.45); }
+
+.reveal-xp { opacity: 0; transform: translateY(22px); transition: opacity .65s ease, transform .65s cubic-bezier(.2,.75,.2,1); }
+.reveal-xp.is-visible { opacity: 1; transform: none; }
+
+html[data-theme="dark"] body::before {
+  background: radial-gradient(circle at 18% 15%, rgba(120,74,160,.22), transparent 33%),
+              radial-gradient(circle at 84% 8%, rgba(232,77,146,.16), transparent 28%), #111016;
+}
+html[data-theme="dark"] .sheet,
+html[data-theme="dark"] .content { background: transparent; }
+html[data-theme="dark"] .topbar,
+html[data-theme="dark"] .rail { background: rgba(20, 18, 26, .86); border-color: var(--xp-line); }
+html[data-theme="dark"] .brand,
+html[data-theme="dark"] .rail-chat,
+html[data-theme="dark"] .rail-label,
+html[data-theme="dark"] .rail-link,
+html[data-theme="dark"] .rail-btn {
+  background: rgba(255,255,255,.075) !important;
+  color: #f4edf5 !important;
+  border-color: var(--xp-line) !important;
+}
+html[data-theme="dark"] .tab,
+html[data-theme="dark"] .mini-btn,
+html[data-theme="dark"] .rail-btn,
+html[data-theme="dark"] .rail-label,
+html[data-theme="dark"] .rail-link { color: var(--xp-muted); border-color: var(--xp-line); }
+html[data-theme="dark"] .mini-btn { background: rgba(255,255,255,.09) !important; color: #f4edf5 !important; }
+html[data-theme="dark"] .tab.is-on,
+html[data-theme="dark"] .app[data-active] .tab.is-on { background: linear-gradient(135deg, #e84d92, #7659ff); color: #fff; }
+html[data-theme="dark"] .brand-title,
+html[data-theme="dark"] h1,
+html[data-theme="dark"] h2,
+html[data-theme="dark"] h3,
+html[data-theme="dark"] .hub-card b,
+html[data-theme="dark"] .event-card h3 { color: var(--xp-text); }
+html[data-theme="dark"] p,
+html[data-theme="dark"] small,
+html[data-theme="dark"] .result-note,
+html[data-theme="dark"] .photo-card figcaption { color: var(--xp-muted); }
+html[data-theme="dark"] .hub-card,
+html[data-theme="dark"] .event-card,
+html[data-theme="dark"] .photo-card,
+html[data-theme="dark"] .board,
+html[data-theme="dark"] .fun-panel,
+html[data-theme="dark"] .chat-box,
+html[data-theme="dark"] .variant-atlas,
+html[data-theme="dark"] .kpl-corner,
+html[data-theme="dark"] .view:not(#view-home) > .page-head,
+html[data-theme="dark"] .paper { background: var(--xp-surface-strong) !important; border-color: var(--xp-line); color: var(--xp-text); }
+html[data-theme="dark"] input,
+html[data-theme="dark"] textarea,
+html[data-theme="dark"] select { background: #211d28 !important; border-color: var(--xp-line) !important; color: var(--xp-text) !important; }
+html[data-theme="dark"] .year-ribbon { border-color: var(--xp-line); }
+html[data-theme="dark"] .year-ribbon span { border-color: var(--xp-line); }
+
+/* The hero remains a bright "memory page" inside the night-mode frame. */
+html[data-theme="dark"] .hero h1,
+html[data-theme="dark"] .hero h2,
+html[data-theme="dark"] .hero h3,
+html[data-theme="dark"] .hero p:not(.hero-num),
+html[data-theme="dark"] .hero small { color: #615766; }
+html[data-theme="dark"] .hero .milestone-card b,
+html[data-theme="dark"] .hero .milestone-card small { color: #f8f1f8; }
+
+@media (max-width: 820px) {
+  .top-actions #cardBtn { display: none; }
+  .icon-btn { min-width: 36px; padding-inline: 9px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .reveal-xp { opacity: 1; transform: none; transition: none; }
+  .hub-card::after { transition: none; }
+}

@@ -120,8 +120,53 @@ window.LOVE = {
     }
   },
 
-  // 不在这里排放照片。请打开网页后点「添加照片」。
-  photos: [],
+  // 使用已有像素照片作为基础相册；网页新增照片继续保存在原有本地存储中。
+  photos: [
+    {
+        "src": "photos/pixel-alley.jpg",
+        "caption": "小巷里的慢时光"
+    },
+    {
+        "src": "photos/pixel-cafe.jpg",
+        "caption": "一起坐坐，喝杯咖啡"
+    },
+    {
+        "src": "photos/pixel-chongqing-hands.jpg",
+        "caption": "重庆 · 牵手的瞬间"
+    },
+    {
+        "src": "photos/pixel-chongqing-together.jpg",
+        "caption": "重庆 · 一起入镜"
+    },
+    {
+        "src": "photos/pixel-chongqing-ying.jpg",
+        "caption": "重庆 · 镜头里的你"
+    },
+    {
+        "src": "photos/pixel-close-selfie.jpg",
+        "caption": "靠近一点的合照"
+    },
+    {
+        "src": "photos/pixel-hydrangea.jpg",
+        "caption": "花开的时候"
+    },
+    {
+        "src": "photos/pixel-night-clips.jpg",
+        "caption": "夜晚的小片段"
+    },
+    {
+        "src": "photos/pixel-sleep.jpg",
+        "caption": "安静的日常"
+    },
+    {
+        "src": "photos/pixel-street.jpg",
+        "caption": "一起走过的街道"
+    },
+    {
+        "src": "photos/pixel-wooden-selfie.jpg",
+        "caption": "收藏一张合照"
+    }
+],
 
   // 基础时间线。以后新增内容请打开网页后点「添加事件」，不需要再改这里。
   events: [

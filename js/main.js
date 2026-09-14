@@ -1455,13 +1455,17 @@
     return changed;
   }
 
-  function pushSiteData() {
+  async function pushSiteData() {
     if (!cloudReady || !supabase) return;
-    supabase.from("site_data").upsert([
-      { id: "main", payload: { food: data.food || null, address: data.address || "", updatedAt: Date.now() }, time: Date.now() }
-    ]).then(({ error }) => {
+    try {
+      const { data: rows } = await supabase.from("site_data").select("payload").eq("id", "main").limit(1);
+      const remotePayload = rows && rows[0] && rows[0].payload && typeof rows[0].payload === "object" ? rows[0].payload : {};
+      const payload = { ...remotePayload, food: data.food || null, address: data.address || "", updatedAt: Date.now() };
+      const { error } = await supabase.from("site_data").upsert([{ id: "main", payload, time: Date.now() }]);
       if (error) console.error("[site_data 推送失败]", error.message);
-    });
+    } catch (e) {
+      console.error("[site_data 推送失败]", e);
+    }
   }
 
   async function loadCloudChat() {
@@ -1729,14 +1733,27 @@
     if (!cfg.music) return;
     const audio = $("bgm");
     audio.src = cfg.music;
+    const buttons = [$("musicBtn"), $("musicBtn2")];
+    const syncMusicButtons = () => {
+      const playing = !audio.paused;
+      buttons.forEach((button) => {
+        button.setAttribute("aria-pressed", String(playing));
+        button.setAttribute("aria-label", playing ? "暂停背景音乐" : "播放背景音乐");
+      });
+      $("musicBtn").textContent = playing ? "Ⅱ 暂停" : "♪ 音乐";
+      $("musicBtn2").textContent = playing ? "Ⅱ" : "♪";
+    };
     const toggle = () => {
-      if (audio.paused) audio.play().catch(() => {});
+      if (audio.paused) audio.play().catch(() => toast("音乐暂时无法播放"));
       else audio.pause();
     };
     $("musicBtn").classList.remove("hidden");
     $("musicBtn2").classList.remove("hidden");
     $("musicBtn").onclick = toggle;
     $("musicBtn2").onclick = toggle;
+    audio.addEventListener("play", syncMusicButtons);
+    audio.addEventListener("pause", syncMusicButtons);
+    syncMusicButtons();
   }
 
   /* ============ Toast ============ */

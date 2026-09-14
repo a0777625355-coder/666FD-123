@@ -76,7 +76,12 @@
     uid,
     compress,
     exportJson() {
-      const blob = new Blob([JSON.stringify(load(), null, 2)], { type: "application/json" });
+      const payload = load();
+      try {
+        const study = JSON.parse(localStorage.getItem("our1000days.study.v1") || "null");
+        if (study && typeof study === "object" && !Array.isArray(study)) payload.study = study;
+      } catch (e) { /* 没有学习记录时照常导出其他内容 */ }
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
       a.download = "我们的1000天-备份.json";
@@ -90,7 +95,7 @@
           try {
             const raw = JSON.parse(reader.result);
             if (!raw || typeof raw !== "object" || Array.isArray(raw) ||
-                !["events", "photos", "chat", "food"].some(k => Object.hasOwn(raw, k))) throw new Error("invalid backup");
+                !["events", "photos", "chat", "food", "study"].some(k => Object.hasOwn(raw, k))) throw new Error("invalid backup");
             for (const key of ["events", "photos", "chat"]) {
               if (raw[key] !== undefined && !Array.isArray(raw[key])) throw new Error("invalid list");
             }
@@ -100,6 +105,9 @@
             if ((raw.events || []).some(e => !e || typeof e !== "object" || typeof e.title !== "string" || !validDate(e.date) || !safeId(e.id) || (e.photo && !safeImage(e.photo)))) throw new Error("invalid event");
             if ((raw.photos || []).some(p => typeof p === "string" ? !safeImage(p) : !p || !safeImage(p.src) || !validDate(p.date) || !safeId(p.id))) throw new Error("invalid photo");
             if ((raw.chat || []).some(m => !m || typeof m !== "object" || typeof m.text !== "string" || !safeId(m.id))) throw new Error("invalid chat");
+            if (raw.study !== undefined && (!raw.study || typeof raw.study !== "object" || Array.isArray(raw.study) ||
+                (raw.study.goals !== undefined && (typeof raw.study.goals !== "object" || Array.isArray(raw.study.goals))) ||
+                (raw.study.sessions !== undefined && !Array.isArray(raw.study.sessions)))) throw new Error("invalid study");
             if (raw.food != null) {
               if (typeof raw.food !== "object" || Array.isArray(raw.food)) throw new Error("invalid food");
               for (const key of ["menu", "milktea"]) if (raw.food[key] !== undefined && (!Array.isArray(raw.food[key]) || raw.food[key].some(x => !x || typeof x.name !== "string" || !Number.isFinite(x.rate) || x.rate < 1 || x.rate > 5))) throw new Error("invalid food list");
@@ -112,6 +120,10 @@
               for (const key of ["menu","milktea"]) next.food[key] = [...new Map([...(current.food?.[key] || []),...(incoming.food[key] || [])].map(x => [x.name,x])).values()];
             }
             save(next);
+            if (raw.study && typeof raw.study === "object") {
+              localStorage.setItem("our1000days.study.v1", JSON.stringify(raw.study));
+              window.dispatchEvent(new CustomEvent("love-study-imported"));
+            }
             resolve(next);
           } catch (e) {
             reject(e);

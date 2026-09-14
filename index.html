@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#f8f5f2" />
-  <meta name="color-scheme" content="light" />
+  <meta name="color-scheme" content="light dark" />
   <title>我们的第 1000 天</title>
   <style>
     /* 登录成功后在首屏解析阶段直接隐藏门禁，避免刷新时先闪出登录页。 */
@@ -18,12 +18,23 @@
         document.documentElement.classList.add("gate-passed");
       }
     } catch (e) { /* 隐私模式下存储不可用时仍可正常手动登录 */ }
+    try {
+      var rememberedTheme = localStorage.getItem("our1000days.theme.v1");
+      if (rememberedTheme === "dark" || rememberedTheme === "light") {
+        document.documentElement.dataset.theme = rememberedTheme;
+      } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+        document.documentElement.dataset.theme = "dark";
+      }
+    } catch (e) { /* 主题仍可在本次浏览中切换 */ }
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=Press+Start+2P&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css?v=20260906-secret" />
   <link rel="stylesheet" href="css/enhancements.css?v=20260906-kpl" />
+  <link rel="stylesheet" href="css/experience.css?v=20260914-experience" />
+  <link rel="stylesheet" href="css/study.css?v=20260914-study" />
+  <link rel="stylesheet" href="css/music-hub.css?v=20260914-music-hub" />
 </head>
 <body>
   <div class="bg-blobs" aria-hidden="true"></div>
@@ -104,6 +115,7 @@
       </div>
       <button type="button" id="lockSite" class="rail-btn">锁定 · 切换身份</button>
       <div class="rail-foot">
+        <button type="button" id="cardBtnRail" class="rail-btn">生成纪念卡</button>
         <button type="button" id="musicBtn" class="rail-btn hidden" aria-label="音乐">♪ 音乐</button>
         <button type="button" id="exportBtn" class="rail-btn">备份</button>
         <label class="rail-btn">导入<input type="file" id="importFile" accept="application/json" hidden /></label>
@@ -118,12 +130,16 @@
           <button type="button" class="tab is-on" data-view="home">时光</button>
           <button type="button" class="tab" data-view="food">吃喝</button>
           <button type="button" class="tab" data-view="fun">玩乐</button>
+          <button type="button" class="tab" data-view="study">学习</button>
+          <button type="button" class="tab" data-view="music">音乐</button>
           <button type="button" class="tab" data-view="game">Game</button>
           <button type="button" class="tab" data-view="variants">百变</button>
           <button type="button" class="tab" data-view="album">相册</button>
           <button type="button" class="tab" data-view="letter">信</button>
         </nav>
         <div class="top-actions">
+          <button type="button" id="themeBtn" class="mini-btn icon-btn" aria-label="切换深浅主题" aria-pressed="false">☾</button>
+          <button type="button" id="cardBtn" class="mini-btn">纪念卡</button>
           <button type="button" class="mini-btn" data-open="event">＋事件</button>
           <button type="button" class="mini-btn" data-open="photo">＋照片</button>
           <button type="button" id="musicBtn2" class="mini-btn hidden">♪</button>
@@ -418,6 +434,8 @@
           </section>
         </section>
 
+        <!-- 以下旧副本不参与页面渲染；保留为迁移兜底，避免重复 id 干扰脚本。 -->
+        <template id="legacyDuplicateViews">
         <!-- ========== 相册 ========== -->
         <section class="view" id="view-album">
           <div class="page-head row-end">
@@ -635,6 +653,8 @@
           </section>
         </section>
 
+        </template>
+
         <!-- ========== 相册 ========== -->
         <section class="view" id="view-album">
           <div class="page-head row-end">
@@ -649,6 +669,201 @@
             把照片拖到这里，或
             <button type="button" class="btn btn-accent btn-sm" data-open="photo">选择图片</button>
           </div>
+        </section>
+
+        <!-- ========== 两个人的自习室 ========== -->
+        <section class="view" id="view-study">
+          <div class="page-head study-page-head">
+            <div>
+              <span class="study-eyebrow">LEE &amp; CHENG · FOCUS ROOM</span>
+              <h2>两个人的自习室</h2>
+              <p>认真完成今天，也陪彼此慢慢变好。</p>
+            </div>
+            <div class="study-presence">
+              <span id="studyIdentity">当前：小颖</span>
+              <b id="studySyncStatus" data-state="local"><i></i> 本机保存</b>
+            </div>
+          </div>
+
+          <div class="study-focus-grid">
+            <section class="focus-card pomodoro-card" aria-labelledby="pomodoroTitle">
+              <header class="focus-card-head">
+                <div><span>FOCUS TIMER</span><h3 id="pomodoroTitle">番茄钟</h3></div>
+                <div class="timer-modes" role="group" aria-label="番茄钟时长">
+                  <button type="button" class="is-on" data-timer-minutes="25">专注 25</button>
+                  <button type="button" data-timer-minutes="30">30</button>
+                  <button type="button" data-timer-minutes="40">40</button>
+                  <button type="button" data-timer-minutes="45">45</button>
+                  <button type="button" data-timer-minutes="50">50</button>
+                  <button type="button" data-timer-minutes="60">60</button>
+                  <button type="button" data-timer-minutes="120">120</button>
+                  <button type="button" data-timer-minutes="5">短休 5</button>
+                  <button type="button" data-timer-minutes="15">长休 15</button>
+                </div>
+              </header>
+              <div class="timer-stage">
+                <div class="timer-orbit" id="timerOrbit" style="--timer-progress:0deg">
+                  <div class="timer-face">
+                    <span id="timerPhase">准备专注</span>
+                    <strong id="timerDisplay">25:00</strong>
+                    <small id="timerOwner">这一轮属于小颖</small>
+                  </div>
+                </div>
+                <div class="timer-copy">
+                  <span>ONE THING AT A TIME</span>
+                  <h4 id="timerEncourage">先开始，再慢慢进入状态。</h4>
+                  <p>完成一轮专注后，时间会自动计入当前登录人的今日统计，并响铃提醒。</p>
+                  <div class="timer-actions">
+                    <button type="button" class="study-primary" id="timerToggle">开始专注</button>
+                    <button type="button" class="study-ghost" id="timerReset">重置</button>
+                    <button type="button" class="study-ghost" id="timerFinish">完成本轮</button>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="focus-card noise-card" aria-labelledby="noiseTitle">
+              <header class="focus-card-head">
+                <div><span>AMBIENT SOUND</span><h3 id="noiseTitle">白噪声</h3></div>
+                <span class="noise-wave" id="noiseWave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+              </header>
+              <div class="noise-visual" aria-hidden="true"><span></span><span></span><span></span></div>
+              <div class="noise-options" role="group" aria-label="选择噪声颜色">
+                <button type="button" class="is-on" data-noise="white"><i>◌</i><span><b>白噪声</b><small>清晰 · 屏蔽干扰</small></span></button>
+                <button type="button" data-noise="pink"><i>≈</i><span><b>粉红噪声</b><small>柔和 · 阅读写作</small></span></button>
+                <button type="button" data-noise="brown"><i>∿</i><span><b>棕色噪声</b><small>低沉 · 深度专注</small></span></button>
+                <button type="button" data-noise="rainfire"><i>☂</i><span><b>雨天火炉</b><small>细雨 · 木柴噼啪</small></span></button>
+                <button type="button" data-noise="ocean"><i>≋</i><span><b>海浪声</b><small>潮汐 · 周期浪涌</small></span></button>
+                <button type="button" data-noise="library"><i>✎</i><span><b>图书馆</b><small>翻书 · 轻声写字</small></span></button>
+              </div>
+              <div class="noise-controls">
+                <button type="button" class="study-primary" id="noiseToggle" aria-pressed="false">播放白噪声</button>
+                <label><span>音量</span><input type="range" id="noiseVolume" min="0" max="100" value="34" aria-label="白噪声音量"></label>
+              </div>
+            </section>
+          </div>
+
+          <section class="study-goals" aria-labelledby="goalsTitle">
+            <div class="study-section-head">
+              <div><span>TODAY'S INTENTIONS</span><h3 id="goalsTitle">今日学习目标</h3></div>
+              <form id="studyGoalForm" autocomplete="off">
+                <label class="sr-only" for="studyGoalInput">添加我的学习目标</label>
+                <input id="studyGoalInput" maxlength="60" placeholder="写下我今天要完成的事…" required>
+                <button type="submit">＋ 添加目标</button>
+              </form>
+            </div>
+            <div class="goal-columns">
+              <article class="goal-person him">
+                <header><img class="pixel" src="assets/chars/dong-idle.gif" alt=""><div><span>小栋 · TODAY</span><h4>小栋的目标</h4></div><b id="goalProgressHim">0 / 0</b></header>
+                <div class="goal-list" id="goalListHim"></div>
+              </article>
+              <article class="goal-person her">
+                <header><img class="pixel" src="assets/chars/ying-blink.gif" alt=""><div><span>小颖 · TODAY</span><h4>小颖的目标</h4></div><b id="goalProgressHer">0 / 0</b></header>
+                <div class="goal-list" id="goalListHer"></div>
+              </article>
+            </div>
+          </section>
+
+          <section class="study-stats" aria-labelledby="studyStatsTitle">
+            <div class="study-section-head"><div><span>FOCUS TOGETHER</span><h3 id="studyStatsTitle">今日学习统计</h3></div><small id="studyStatsDate"></small></div>
+            <div class="study-stat-cards">
+              <article><span class="stat-dot him"></span><small>小栋今日</small><strong id="studyTimeHim">0 分钟</strong><em id="studySessionsHim">0 个番茄</em></article>
+              <article><span class="stat-dot her"></span><small>小颖今日</small><strong id="studyTimeHer">0 分钟</strong><em id="studySessionsHer">0 个番茄</em></article>
+              <article class="together"><span class="stat-dot"></span><small>今日一起</small><strong id="studyTimeTogether">0 分钟</strong><em>每一分钟都算数</em></article>
+              <article><span class="stat-dot week"></span><small>近 7 天累计</small><strong id="studyTimeWeek">0 分钟</strong><em id="studyWeekSessions">0 次专注</em></article>
+            </div>
+            <div class="study-week-chart" id="studyWeekChart" aria-label="近七天学习时长柱状图"></div>
+          </section>
+
+          <section class="music-preview" aria-labelledby="musicPreviewTitle">
+            <div class="music-cover" aria-hidden="true"><span>OUR</span><strong>STUDY</strong><small>PLAYLIST · 01</small><i>♥</i></div>
+            <div class="music-now">
+              <span>ONLINE MUSIC · UI PREVIEW</span>
+              <h3 id="musicPreviewTitle">我们的自习歌单</h3>
+              <p>在线播放器外观预览 · 暂未接入音源</p>
+              <div class="music-track"><i></i></div>
+              <div class="music-times"><span>01:24</span><span>03:48</span></div>
+              <div class="music-controls" aria-label="播放器外观预览">
+                <button type="button" disabled aria-label="随机播放">⌘</button>
+                <button type="button" disabled aria-label="上一首">‹</button>
+                <button type="button" class="music-play" disabled aria-label="播放">▶</button>
+                <button type="button" disabled aria-label="下一首">›</button>
+                <button type="button" disabled aria-label="循环播放">↻</button>
+              </div>
+            </div>
+            <div class="music-queue">
+              <header><span>PLAY NEXT</span><b>3 首</b></header>
+              <ol>
+                <li class="is-on"><span>01</span><div><b>晚风与书页</b><small>LEE &amp; CHENG</small></div><em>03:48</em></li>
+                <li><span>02</span><div><b>一起专注</b><small>FOCUS ROOM</small></div><em>04:12</em></li>
+                <li><span>03</span><div><b>写完这一页</b><small>NIGHT STUDY</small></div><em>03:26</em></li>
+              </ol>
+              <label class="music-volume"><span>♬</span><input type="range" value="58" disabled aria-label="播放器音量外观"><b>58%</b></label>
+            </div>
+          </section>
+        </section>
+
+        <!-- ========== 在线音乐 ========== -->
+        <section class="view" id="view-music">
+          <div class="page-head music-page-head">
+            <div>
+              <h2>两个人的音乐角</h2>
+            </div>
+            <span class="music-connection-state" id="musicConnectionState"><i></i> 尚未连接音乐服务</span>
+          </div>
+
+          <section class="music-provider-panel" aria-labelledby="musicProviderTitle">
+            <div class="music-provider-copy">
+              <h3 id="musicProviderTitle">选择音乐来源</h3>
+            </div>
+            <div class="music-provider-grid" role="radiogroup" aria-label="选择在线音乐服务">
+              <button type="button" class="is-on" data-music-provider="apple" role="radio" aria-checked="true">
+                <i>♪</i><span><b>Apple Music</b></span>
+              </button>
+              <button type="button" data-music-provider="spotify" role="radio" aria-checked="false">
+                <i>◉</i><span><b>Spotify</b></span>
+              </button>
+              <button type="button" data-music-provider="youtube" role="radio" aria-checked="false">
+                <i>▶</i><span><b>YouTube</b></span>
+              </button>
+            </div>
+            <div class="music-connect-guide">
+              <div><h4 id="musicProviderHeading">Apple Music 尚未连接</h4></div>
+              <button type="button" class="study-primary" id="musicDocsBtn">查看接入方式 ↗</button>
+            </div>
+          </section>
+
+          <section class="online-player-shell" aria-labelledby="onlinePlayerTitle">
+            <div class="online-player-main">
+              <div class="online-cover" id="onlineCover" aria-hidden="true"><span>LEE</span><strong>&amp;</strong><span>CHENG</span><i>♫</i></div>
+              <div class="online-now-playing">
+                <h3 id="onlinePlayerTitle">等待连接音乐服务</h3>
+                <div class="online-progress"><i></i></div>
+                <div class="online-times"><span>00:00</span><span>00:00</span></div>
+                <div class="online-controls">
+                  <button type="button" disabled aria-label="随机播放">⌘</button>
+                  <button type="button" disabled aria-label="上一首">‹</button>
+                  <button type="button" class="online-play" disabled aria-label="播放">▶</button>
+                  <button type="button" disabled aria-label="下一首">›</button>
+                  <button type="button" disabled aria-label="循环播放">↻</button>
+                </div>
+              </div>
+            </div>
+            <div class="online-search-panel">
+              <form id="onlineMusicSearch" role="search">
+                <label for="onlineMusicQuery">搜索歌曲、歌手或专辑</label>
+                <div><input id="onlineMusicQuery" type="search" placeholder="连接服务后即可搜索…" autocomplete="off"><button type="submit">搜索</button></div>
+              </form>
+              <div class="online-search-result" id="onlineMusicResults" aria-live="polite">
+                <div class="music-empty-state"><i>♫</i><h4>等待搜索</h4></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="online-playlist" aria-labelledby="onlinePlaylistTitle">
+            <header><div><h3 id="onlinePlaylistTitle">我们的播放队列</h3></div><b>0 首歌曲</b></header>
+            <div class="online-playlist-empty"><span>01</span><p>播放队列还是空的</p><em>—:—</em></div>
+          </section>
         </section>
 
         <!-- ========== 信 ========== -->
@@ -736,5 +951,8 @@
   <script src="js/main.js?v=20260906-secret"></script>
   <script src="js/upgrade.js?v=20260906-secret"></script>
   <script src="js/kpl-live.js?v=20260908-kpl-manual"></script>
+  <script src="js/experience.js?v=20260914-experience"></script>
+  <script src="js/study.js?v=20260914-study"></script>
+  <script src="js/music-hub.js?v=20260914-music-hub"></script>
 </body>
 </html>
