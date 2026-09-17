@@ -35,6 +35,7 @@
   });
   let clueTimer = null, bubbleTimer = null, glowTimer = null;
   const envelope = $('secretEnvelope');
+  const mailSpot = $('secretMailSpot');
   const secret = $('secretLetter');
   $('dongSecret').onclick = () => {
     if (clueTimer) return;
@@ -45,6 +46,7 @@
       if ($('app').dataset.active !== 'home' || $('app').classList.contains('is-locked') || dialogs.some(d => !d.classList.contains('hidden'))) {
         $('dongBubble').classList.add('hidden'); return;
       }
+      mailSpot.classList.add('is-discovered');
       envelope.focus({preventScroll:true});
       envelope.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',block:'center'});
       envelope.classList.add('is-hinted');

@@ -135,7 +135,6 @@
           <button type="button" class="tab" data-view="game">Game</button>
           <button type="button" class="tab" data-view="variants">百变</button>
           <button type="button" class="tab" data-view="album">相册</button>
-          <button type="button" class="tab" data-view="letter">信</button>
         </nav>
         <div class="top-actions">
           <button type="button" id="themeBtn" class="mini-btn icon-btn" aria-label="切换深浅主题" aria-pressed="false">☾</button>
@@ -152,7 +151,7 @@
           <div class="hero">
             <p class="kicker" id="heroKicker">OUR 1000 DAYS</p>
             <div class="stage">
-              <div class="buddy dong secret-dong"><button type="button" id="dongSecret" class="sprite-trigger" aria-label="戳戳小栋"><img id="heroDong" class="pixel" src="assets/chars/dong-wave.gif" alt="小栋" /></button><span id="dongBubble" class="dong-bubble hidden" role="status">别打了别打了</span></div>
+              <div class="buddy dong secret-dong"><button type="button" id="dongSecret" class="sprite-trigger" aria-label="戳戳小栋，寻找隐藏彩蛋"><img id="heroDong" class="pixel" src="assets/chars/dong-wave.gif" alt="小栋" /></button><span id="dongBubble" class="dong-bubble hidden" role="status">等等……好像有一封蓝色的信</span></div>
               <div class="buddy ying"><img id="heroYing" class="pixel" src="assets/chars/outfits/hoodie-wave.gif" alt="小颖" /></div>
             </div>
             <div class="ground"></div>
@@ -214,8 +213,8 @@
           </div>
 
           <div class="secret-mail-spot" id="secretMailSpot">
-            <button type="button" id="secretEnvelope" class="secret-envelope" aria-label="打开这封悄悄藏起来的信" aria-haspopup="dialog" aria-controls="secretLetter">
-              <svg viewBox="0 0 64 48" width="48" height="36" aria-hidden="true"><path d="M4 8H60V42H4Z" fill="#fff7eb" stroke="currentColor" stroke-width="2"/><path d="M4 42L26 23M60 42L38 23M4 8L32 29L60 8" fill="none" stroke="currentColor" stroke-width="2"/><path d="M28 24L32 28L36 24V20H32V22H28Z" fill="#d693b4"/></svg>
+            <button type="button" id="secretEnvelope" class="secret-envelope" aria-label="打开这封悄悄藏起来的蓝色信" aria-haspopup="dialog" aria-controls="secretLetter">
+              <svg viewBox="0 0 64 48" width="48" height="36" aria-hidden="true"><defs><linearGradient id="blueEnvelope" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#eaf7ff"/><stop offset="1" stop-color="#9ed5ff"/></linearGradient></defs><path d="M4 8H60V42H4Z" fill="url(#blueEnvelope)" stroke="currentColor" stroke-width="2"/><path d="M4 42L26 23M60 42L38 23M4 8L32 29L60 8" fill="none" stroke="currentColor" stroke-width="2"/><path d="M28 24L32 28L36 24V20H32V22H28Z" fill="#4d91d8"/></svg>
             </button>
           </div>
           <section class="block" id="timeline">
@@ -866,18 +865,6 @@
           </section>
         </section>
 
-        <!-- ========== 信 ========== -->
-        <section class="view" id="view-letter">
-          <div class="page-head">
-            <h2>一封信</h2>
-          </div>
-          <div class="letter-wrap">
-            <div class="buddy ying peek"><img class="pixel" src="assets/chars/ying-blink.gif" alt="" /></div>
-            <article class="paper"><p id="letterBody"></p></article>
-            <div class="buddy dong peek"><img class="pixel" src="assets/chars/dong-idle.gif" alt="" /></div>
-          </div>
-        </section>
-
         <footer class="ending">
           <div class="pair">
             <div class="buddy ying"><img class="pixel" src="assets/chars/outfits/hoodie-wave.gif" alt="" /></div>
@@ -925,17 +912,34 @@
   </div>
 
   <div id="secretLetter" class="modal hidden secret-letter" role="dialog" aria-modal="true" aria-labelledby="secretTitle">
-    <article class="modal-card secret-paper">
+    <article class="modal-card secret-paper anniversary-secret-paper">
       <button type="button" class="modal-x" id="secretClose" aria-label="收好这封信">×</button>
       <span class="secret-eyebrow">JUST BETWEEN US · 只给你看</span>
-      <div class="secret-letter-heart" aria-hidden="true">♥</div>
-      <h2 id="secretTitle">第 1001 天，<br>也想和你一起。</h2>
-      <p>被你发现了。<br>本来想藏得再好一点，结果还是被你找到了。</p>
-      <p>1000 天不是故事的终点。之后还有很多顿饭、很多次散步，还有很多句“今天发生了一件事”，想慢慢讲给你听。</p>
-      <p>不一定每天都有什么特别的事。<br>但只要是和你一起，普通的一天，我也想好好收藏。</p>
-      <figure class="secret-photo"><img src="photos/pixel-close-selfie.jpg" alt="我们靠在一起的像素合照" loading="lazy"><figcaption>把这一刻，偷偷夹进信里。</figcaption></figure>
-      <div class="secret-wish"><span>一个小小的心愿</span><p>下一次约会，想和你吃喜欢的东西，走一段不用赶时间的路，再拍一张新的合照。</p></div>
-      <p class="secret-sign">下一个 1000 天，也慢慢写。<br><b>—— 小栋 ♥</b></p>
+      <div class="secret-letter-heart" aria-hidden="true">✉</div>
+      <h2 id="secretTitle">写给李姿颖宝宝的<br>1000 天纪念信</h2>
+      <div class="letter-wrap secret-letter-wrap">
+        <div class="buddy ying peek"><img class="pixel" src="assets/chars/ying-blink.gif" alt="" /></div>
+        <section class="paper"><div id="letterBody" class="letter-content"></div></section>
+        <div class="buddy dong peek"><img class="pixel" src="assets/chars/dong-idle.gif" alt="" /></div>
+      </div>
+
+      <section class="letter-gift" id="letterGift" aria-labelledby="letterGiftTitle">
+        <div class="gift-intro"><span>FOR MY BABY</span><h3 id="letterGiftTitle">还有一份礼物要亲手拆开</h3></div>
+        <button type="button" class="gift-package" id="giftOpenBtn" aria-expanded="false" aria-controls="giftContents">
+          <span class="gift-sparkles" aria-hidden="true"><i>✦</i><i>♥</i><i>✦</i><i>♥</i><i>✦</i><i>♥</i></span>
+          <span class="gift-box" aria-hidden="true"><i class="gift-box-lid"><b></b></i><i class="gift-box-base"><b></b></i></span>
+          <strong>点击拆开礼物</strong><small>里面藏着给宝宝酱准备的惊喜</small>
+        </button>
+        <div class="gift-contents" id="giftContents" aria-hidden="true">
+          <header><span>GIFT UNWRAPPED</span><h3>送给李姿颖宝宝</h3><p>愿这些小小的心意，陪你度过每一个普通又闪亮的日子。</p></header>
+          <div class="gift-photo-grid">
+            <figure class="gift-photo gift-photo-lamb"><div><img src="assets/gifts/gift-lamb.jpg" alt="白色像素风小羊玩偶" loading="lazy"></div><figcaption><b>软乎乎的小羊</b><span>想替我抱抱你</span></figcaption></figure>
+            <figure class="gift-photo gift-photo-necklace"><div><img src="assets/gifts/gift-necklace.png" alt="蓝色水滴宝石项链" loading="lazy"></div><figcaption><b>蓝色的心意</b><span>把闪闪发光送给你</span></figcaption></figure>
+            <figure class="gift-photo gift-photo-device"><div><img src="assets/gifts/gift-device-pixel.png" alt="白色背景上的像素风银色设备" loading="lazy"></div><figcaption><b>实用的小惊喜</b><span>像素世界里的第三份礼物</span></figcaption></figure>
+          </div>
+          <button type="button" class="gift-replay" id="giftReplayBtn">重新拆一次 ↻</button>
+        </div>
+      </section>
       <button type="button" class="btn btn-accent" id="secretKeep">把信收好 ♥</button>
     </article>
   </div>

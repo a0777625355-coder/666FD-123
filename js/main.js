@@ -198,6 +198,7 @@
     safe(() => renderEvents());
     safe(() => renderAlbum());
     safe(() => renderLetter());
+    safe(() => setupLetterGift());
     safe(() => setupEditor());
     safe(() => setupFood());
     safe(() => setupFun());
@@ -958,11 +959,55 @@
   function renderLetter() {
     const t = elapsed();
     const raw = cfg.letter || "";
-    $("letterBody").textContent = raw
+    const content = raw
       .replaceAll("{{herName}}", cfg.herName || "你")
       .replaceAll("{{myName}}", cfg.myName || "我")
       .replaceAll("{{days}}", String(t.days))
       .replaceAll("{{startDate}}", cfg.startDate || "");
+    const body = $("letterBody");
+    const paragraphs = content.split(/\n\s*\n/).map(text => text.trim()).filter(Boolean);
+    body.replaceChildren(...paragraphs.map(text => {
+      const paragraph = document.createElement("p");
+      paragraph.textContent = text;
+      return paragraph;
+    }));
+  }
+
+  function setupLetterGift() {
+    const gift = $("letterGift");
+    const openButton = $("giftOpenBtn");
+    const contents = $("giftContents");
+    const replayButton = $("giftReplayBtn");
+    if (!gift || !openButton || !contents) return;
+    contents.inert = true;
+
+    let revealTimer = 0;
+    const openGift = () => {
+      if (gift.classList.contains("is-open") || gift.classList.contains("is-opening")) return;
+      gift.classList.add("is-opening");
+      openButton.disabled = true;
+      openButton.setAttribute("aria-expanded", "true");
+      revealTimer = window.setTimeout(() => {
+        gift.classList.remove("is-opening");
+        gift.classList.add("is-open");
+        contents.setAttribute("aria-hidden", "false");
+        contents.inert = false;
+        openButton.disabled = false;
+      }, 760);
+    };
+
+    const closeGift = () => {
+      window.clearTimeout(revealTimer);
+      gift.classList.remove("is-opening", "is-open");
+      contents.setAttribute("aria-hidden", "true");
+      contents.inert = true;
+      openButton.disabled = false;
+      openButton.setAttribute("aria-expanded", "false");
+      openButton.focus({ preventScroll: true });
+    };
+
+    openButton.addEventListener("click", openGift);
+    replayButton?.addEventListener("click", closeGift);
   }
 
   /* ============ 吃喝 ============ */
